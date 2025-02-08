@@ -1,0 +1,15 @@
+[project]
+name = "prettymol"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["biotite>=1.1.0", "toolz>=1.0.0,<2"]
+packages = [{ include = "prettymol", from = "src" }]
+
+[dependency-groups]
+dev = ["ipython>=8.32.0", "jupyter>=1.1.1", "pytest>=8.3.4"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
