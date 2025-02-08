@@ -6,6 +6,7 @@ import mathutils
 
 class repltools():
     def __init__(self):
+        self.setup_compositing()
         self._orientation = None
         self._view = None
 
@@ -19,42 +20,45 @@ class repltools():
         render_layers = node_tree.nodes['Render Layers']
         composite = node_tree.nodes['Composite']
         glare_node.location = (render_layers.location.x + 300, render_layers.location.y)
+
+        # bloom_types =  ['BLOOM', 'GHOSTS', 'STREAKS', 'FOG_GLOW', 'SIMPLE_STAR']
+        glare_node.glare_type = "BLOOM"
+
         node_tree.links.new(render_layers.outputs['Image'], glare_node.inputs['Image'])
         node_tree.links.new(glare_node.outputs['Image'], composite.inputs['Image'])
 
-        print("\n=== INPUT SOCKETS ===")
-        for input in glare_node.inputs:
-            print(f"Name: {input.name}")
-            print(f"Type: {input.type}")
-            print(f"Default Value: {input.default_value}")
-            print("---")
-
-        # Print Output Sockets
-        print("\n=== OUTPUT SOCKETS ===")
-        for output in glare_node.outputs:
-            print(f"Name: {output.name}")
-            print(f"Type: {output.type}")
-            print("---")
-
-        bloom_types =  ['BLOOM', 'GHOSTS', 'STREAKS', 'FOG_GLOW', 'SIMPLE_STAR']
-
-        for bt in bloom_types:
-            glare_node.glare_type = bt
-
-            print("\n=== Glare Type  ===")
-            print(f"{glare_node.glare_type}")
-
-            print(f"\n=== Settable Properties for Glare Type: {glare_node.glare_type} ===")
-            for prop in glare_node.bl_rna.properties:
-                if not prop.is_readonly:
-                    try:
-                        value = getattr(glare_node, prop.identifier)
-                        print(f"Property: {prop.identifier}")
-                        print(f"Current Value: {value}")
-                        print(f"Type: {prop.type}")
-                        print("---")
-                    except AttributeError:
-                        pass
+        # print("\n=== INPUT SOCKETS ===")
+        # for input in glare_node.inputs:
+        #     print(f"Name: {input.name}")
+        #     print(f"Type: {input.type}")
+        #     print(f"Default Value: {input.default_value}")
+        #     print("---")
+        #
+        # # Print Output Sockets
+        # print("\n=== OUTPUT SOCKETS ===")
+        # for output in glare_node.outputs:
+        #     print(f"Name: {output.name}")
+        #     print(f"Type: {output.type}")
+        #     print("---")
+        #
+        # bloom_types =  ['BLOOM', 'GHOSTS', 'STREAKS', 'FOG_GLOW', 'SIMPLE_STAR']
+        # for bt in bloom_types:
+        #     glare_node.glare_type = bt
+        #
+        #     print("\n=== Glare Type  ===")
+        #     print(f"{glare_node.glare_type}")
+        #
+        #     print(f"\n=== Settable Properties for Glare Type: {glare_node.glare_type} ===")
+        #     for prop in glare_node.bl_rna.properties:
+        #         if not prop.is_readonly:
+        #             try:
+        #                 value = getattr(glare_node, prop.identifier)
+        #                 print(f"Property: {prop.identifier}")
+        #                 print(f"Current Value: {value}")
+        #                 print(f"Type: {prop.type}")
+        #                 print("---")
+        #             except AttributeError:
+        #                 pass
 
         return self
 
