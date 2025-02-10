@@ -2,6 +2,7 @@ import bpy
 import databpy
 import mathutils
 import numpy as np
+from typing import Union, Any
 from biotite.structure.io import pdbx
 from biotite.structure import filter
 from biotite import structure as struct
@@ -9,15 +10,11 @@ from biotite.structure import bonds
 from molecularnodes.entities.molecule import molecule
 from molecularnodes.download import download
 from molecularnodes.blender import nodes as bl_nodes
-from toolz.dicttoolz import merge
-from  .styles import bsdf_principled_defaults, default_styles
+from .styles import bsdf_principled_defaults, default_styles
+from .styledata import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle, BSDFPrincipled, GlareStreaks, GlareBloom, GlareGhosts, GlareFogGlow, GlareSimpleStar
 
+from dataclasses import replace, fields
 
-# import numpy as np
-# from biotite.structure import AtomArray
-# from biotite.database import pdbx
-# from biotite.structure import bonds
-# from biotite.database import download
 
 # Connect bonds and center the structure
 def load_pdb(code):
@@ -80,6 +77,127 @@ def create_basic_material(name, stylemap):
  #       (when-let [material-input (first (filter #(= (.-name %) "Material") (.. style-node -inputs)))]
  #         (.. obj -data -materials (append material))
  #         (set! (.-default_value material-input) material)))))
+
+
+
+# class BallStickStyle:
+# class CartoonStyle:
+# class RibbonStyle:
+# class SpheresStyle:
+# class SticksStyle:
+# class SurfaceStyle:
+
+StyleType = Union[BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle]
+
+
+# def draw2(arr: Any, style: StyleType, material: Any) -> None:
+#     """
+#     Take a collection of states corresponding to frames and generate an output
+
+#     Args:
+#         arr: Array of molecular states/frames
+#         style: Style class instance defining visualization parameters
+#         material: Material to be applied
+#     """
+#     molname = f"mol_{id(arr)}"
+#     matname = f"mol_{id(arr)}_mat"
+
+#     obj, _ = molecule._create_object(arr, name=molname, style=style.style)
+#     mat = bpy.data.materials.new(matname)
+#     mat.use_nodes = True
+#     bsdf = mat.node_tree.nodes.get("Principled BSDF")
+
+#     bl_nodes.create_starting_node_tree(obj, style=style.style)
+#     modifier = next(mod for mod in obj.modifiers if mod.type == "NODES")
+#     node_tree = modifier.node_group
+#     nodes = node_tree.nodes
+#     style_node = next((node for node in nodes if "Style" in node.name), None)
+
+#     if style_node:
+#         for input in style_node.inputs:
+#             if input.type != "GEOMETRY":
+#                 input_name = input.name
+#                 for field in fields(style):
+#                     key = field.name
+#                     value = getattr(style, key)
+#                     print(key, value)
+
+#                     if input_name == key:
+#                         print(f"{input} {key} {value}")
+#                         input.default_value = value
+#     # update ametail properties
+#      # for input in bsdf.inputs:
+#      #          if input.type != "GEOMETRY":
+#      #              input_name = input.name
+#      #              for key, value in styles.items():
+#      #                  if input_name == key:
+#      #                      setattr(input, "default_value", value)
+
+#         material_input = next((inp for inp in style_node.inputs if inp.name == "Material"), None)
+#         if material_input:
+#             obj.data.materials.append(material)
+#             material_input.default_value = material
+
+
+def draw2(arr: Any, style: StyleType, material: BSDFPrincipled) -> None:
+    """
+    Take a collection of states corresponding to frames and generate an output
+
+    Args:
+        arr: Array of molecular states/frames
+        style: Style class instance defining visualization parameters
+        material_properties: Dictionary of material properties to apply
+    """
+    molname = f"mol_{id(arr)}"
+    matname = f"mol_{id(arr)}_mat"
+
+    # Create object
+    obj, _ = molecule._create_object(arr, name=molname, style=style.style)
+
+    # Create and setup material
+    mat = bpy.data.materials.new(matname)
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+
+    # Apply material properties
+    for input in bsdf.inputs:
+        if input.type != "GEOMETRY":
+            input_name = input.name
+            input_name = input.name.lower().replace(" ", "_")
+            for field in fields(material):
+                key = field.name
+                value = getattr(style, key)
+                if input_name == key:
+                    input.default_value = value
+
+    # Setup node tree and apply style
+    bl_nodes.create_starting_node_tree(obj, style=style.style)
+    modifier = next(mod for mod in obj.modifiers if mod.type == "NODES")
+    node_tree = modifier.node_group
+    nodes = node_tree.nodes
+    style_node = next((node for node in nodes if "Style" in node.name), None)
+
+    if style_node:
+        # Apply style properties
+        for input in style_node.inputs:
+            if input.type != "GEOMETRY":
+                input_name = input.name
+                input_name = input.name.lower().replace(" ", "_")
+                for field in fields(style):
+                    key = field.name
+                    value = getattr(style, key)
+                    if input_name == key:
+                        print(f"{input} {key} {value}")
+                        input.default_value = value
+
+        # Link material to object
+        material_input = next((inp for inp in style_node.inputs if inp.name == "Material"), None)
+        if material_input:
+            obj.data.materials.append(mat)  # Use the newly created material
+            material_input.default_value = mat
+
+    return None
+
 
 def draw(arr, style_key, style_map, material):
     """

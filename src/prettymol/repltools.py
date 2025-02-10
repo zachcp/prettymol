@@ -8,7 +8,75 @@ class repltools():
     def __init__(self):
         self.setup_compositing()
         self._orientation = None
-        self._view = None
+        self._view = self.get_view()
+
+
+    def auto_view(self):
+        area_type = 'VIEW_3D'
+        areas = [area for area in bpy.context.window.screen.areas if area.type == area_type]
+        if len(areas) <= 0:
+            raise Exception(f"Make sure an Area of type {area_type} is open or visible in your screen!")
+
+        # Select only MolecularNodes collection
+        for col in bpy.data.collections:
+            col.hide_viewport = True
+        if "MolecularNodes" in bpy.data.collections:
+            bpy.data.collections["MolecularNodes"].hide_viewport = False
+
+        with bpy.context.temp_override(
+            window=bpy.context.window,
+            area=areas[0],
+            region=[region for region in areas[0].regions if region.type == 'WINDOW'][0],
+            screen=bpy.context.window.screen
+        ):
+            bpy.ops.view3d.view_all()
+
+        # Restore visibility
+        for col in bpy.data.collections:
+            col.hide_viewport = False
+
+        self._view = self.get_view()
+        return self
+
+    def rotate_view(self, degrees):
+        area_type = 'VIEW_3D'
+        areas = [area for area in bpy.context.window.screen.areas if area.type == area_type]
+        if len(areas) <= 0:
+            raise Exception(f"Make sure an Area of type {area_type} is open or visible in your screen!")
+
+        with bpy.context.temp_override(
+            window=bpy.context.window,
+            area=areas[0],
+            region=[region for region in areas[0].regions if region.type == 'WINDOW'][0],
+            screen=bpy.context.window.screen
+        ):
+            import math
+            rads = math.radians(degrees)
+            bpy.ops.view3d.rotate(angle=rads, type="ORBIT")
+
+        self._view = self.get_view()
+        return self
+
+
+    def rotate_view2(self, degrees):
+        import math
+        area_type = 'VIEW_3D'
+        areas = [area for area in bpy.context.window.screen.areas if area.type == area_type]
+        if len(areas) <= 0:
+            raise Exception(f"Make sure an Area of type {area_type} is open or visible in your screen!")
+
+        space_data = areas[0].spaces.active
+
+        rads = math.radians(degrees)
+        space_data.region_3d.view_rotation.rotate(mathutils.Euler((0.0, 0.0, rads)))
+
+        self._view = self.get_view()
+        return self
+
+    def view_selected(self):
+        # todo
+        # bpy.ops.view3d.camera_to_view_selected()
+        pass
 
     def setup_compositing(self):
         scene = bpy.context.scene
@@ -86,8 +154,6 @@ class repltools():
             view_matrix = region3d.view_matrix
             camera_matrix = view_matrix.inverted()
             camera.matrix_world = camera_matrix
-
-            # Convert matrix to list of vectors
             return [list(row) for row in camera.matrix_world]
         return None
 

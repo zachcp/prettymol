@@ -1,95 +1,154 @@
-;; core loading function. used molnodes code + biotite bond connections.
- (defn load-pdb [code]
-   ^struct/AtomArray
-   (let [arr (-> code download/download pdbx.CIFFile/read pdbx/get_structure seq first) ]
-     (set! (.-bonds arr) (bonds/connect_via_residue_names arr))
-     (center-array arr)))
+from biotite.structure import filter
+
+# selector = StructureSelector(structure)
+# mask = (selector
+#         .resid(10)
+#         .resname("ALA")
+#         .chain("A")
+#         .get_mask())
+
+class StructureSelector:
+    def __init__(self, structure):
+        self.structure = structure
+        self.mask = None
+
+    def _update_mask(self, new_mask):
+        self.mask = new_mask if self.mask is None else (self.mask & new_mask)
+        return self
+
+    def amino_acids(self):
+        return self._update_mask(select_amino_acids(self.structure))
+
+    def atomname(self, atomname):
+        return self._update_mask(select_atomname(self.structure, atomname))
+
+    def canonical_amino_acids(self):
+        return self._update_mask(select_canonical_amino_acids(self.structure))
+
+    def canonical_nucleotides(self):
+        return self._update_mask(select_canonical_nucleotides(self.structure))
+
+    def carbohydrates(self):
+        return self._update_mask(select_carbohydrates(self.structure))
+
+    def chain(self, chain_id):
+        return self._update_mask(select_chain(self.structure, chain_id))
+
+    def element(self, element):
+        return self._update_mask(select_element(self.structure, element))
+
+    def first_altloc(self):
+        return self._update_mask(select_first_altloc(self.structure))
+
+    def get_mask(self):
+        return self.mask
+
+    def get_selection(self):
+        """Returns the structure filtered by the current mask"""
+        if self.mask is None:
+            return self.structure
+        return self.structure[self.mask]
+
+    def hetero(self):
+        return self._update_mask(select_hetero(self.structure))
+
+    def highest_occupancy_altloc(self):
+        return self._update_mask(select_highest_occupancy_altloc(self.structure))
+
+    def inscode(self, inscode):
+        return self._update_mask(select_inscode(self.structure, inscode))
+
+    def intersection(self):
+        return self._update_mask(select_intersection(self.structure))
+
+    def linear_bond_continuity(self):
+        return self._update_mask(select_linear_bond_continuity(self.structure))
+
+    def monoatomic_ions(self):
+        return self._update_mask(select_monoatomic_ions(self.structure))
+
+    def nucleotides(self):
+        return self._update_mask(select_nucleotides(self.structure))
+
+    def peptide_backbone(self):
+        return self._update_mask(select_peptide_backbone(self.structure))
+
+    def phosphate_backbone(self):
+        return self._update_mask(select_phosphate_backbone(self.structure))
+
+    def polymer(self):
+        return self._update_mask(select_polymer(self.structure))
+
+    def resid(self, num):
+        return self._update_mask(select_resid(self.structure, num))
+
+    def resname(self, res_name):
+        return self._update_mask(select_resname(self.structure, res_name))
+
+    def solvent(self):
+        return self._update_mask(select_solvent(self.structure))
 
 
 
- # (defn- center-array [arr]
- #    (set! (.-coord arr) (np/subtract  (.-coord arr) (databpy/centre (.-coord arr))))
- #    arr)
+def select_amino_acids(arr):
+    return filter.filter_amino_acids(arr)
 
+def select_atomname(arr, atomname):
+    return atomname == arr.get_annotation("atom_name")
 
+def select_canonical_amino_acids(arr):
+    return filter.filter_canonical_amino_acids(arr)
 
- # (defn create-basic-material [name stylemap]
- #   (let [mat (doto (bpy.data.materials/new name) (-> .-use_nodes (set! true)))
- #         bsdf (.. mat -node_tree -nodes (get "Principled BSDF"))
- #         styles (merge bsdf-principled-defaults stylemap)]
- #     (doseq [input (.-inputs bsdf)]
- #       (when-not (= (.-type input) "GEOMETRY")
- #         (let [input-name (.-name input)]
- #           (doseq [[key value] styles]
- #             (when (= input-name key)
- #               ;;  (println input " " key " " value "")
- #               (python/setattr input "default_value" value))))))
- #     mat))
+def select_canonical_nucleotides(arr):
+    return filter.filter_canonical_nucleotides(arr)
 
+def select_carbohydrates(arr):
+    return filter.filter_carbohydrates(arr)
 
- # (defn draw! [arr style-key style-map material]
- #   "take a collection of states corresponding to frames and generate an output"
- #   (let [molname (str (gensym))
- #         [obj _] (molecule/_create_object  arr ** :name molname :style (name style-key))
- #         _ (bl_nodes/create_starting_node_tree obj ** :style (name style-key))
- #         modifier (first (filter #(= (.-type %) "NODES") (vec (.-modifiers obj))))
- #         node-tree (.-node_group modifier)
- #         nodes (.-nodes node-tree)
- #         global-styles (merge default-styles style-map)]
- #     (when-let [style-node (first (filter #(str/includes? (.-name %) "Style") (vec nodes)))]
- #       (doseq [input (.-inputs style-node)]
- #         (when (not= (.-type input) "GEOMETRY")
- #           (let [input-name (.-name input)
- #                 styles (get global-styles style-key)]
- #             (doseq [[key value] styles]
- #               (when (= input-name key)
- #                 (println input " " key " " value "")
- #                 (python/setattr input "default_value" value))))))
+def select_chain(arr, chain):
+    return chain == arr.get_annotation("chain_id")
 
- #            ;; Set the material in the node's Material input
- #       (when-let [material-input (first (filter #(= (.-name %) "Material") (.. style-node -inputs)))]
- #         (.. obj -data -materials (append material))
- #         (set! (.-default_value material-input) material)))))
+def select_element(arr, element):
+    return element == arr.get_annotation("element")
 
+def select_first_altloc(arr):
+    return filter.filter_first_altloc(arr)
 
- # (defn filter-amino-acids [arr] (filter/filter_amino_acids arr))
+def select_hetero(arr):
+    return True == arr.get_annotation("hetero")
 
- #  (defn filter-atomname [arr atomname] (= atomname (.get_annotation arr "atom_name")))
+def select_highest_occupancy_altloc(arr):
+    return filter.filter_highest_occupancy_altloc(arr)
 
- #  (defn filter-canonical-amino-acids [arr] (filter/filter_canonical_amino_acids arr))
+def select_inscode(arr, inscode):
+    return inscode == arr.get_annotation("ins_code")
 
- #  (defn filter-canonical-nucleotides [arr] (filter/filter_canonical_nucleotides arr))
+def select_intersection(arr):
+    return filter.filter_intersection(arr)
 
- #  (defn filter-carbohydrates [arr] (filter/filter_carbohydrates arr))
+def select_linear_bond_continuity(arr):
+    return filter.filter_linear_bond_continuity(arr)
 
- #  (defn filter-chain [arr chain] (= chain (.get_annotation arr "chain_id")))
+def select_monoatomic_ions(arr):
+    return filter.filter_monoatomic_ions(arr)
 
- #  (defn filter-element [arr element] (= element (.get_annotation arr "element")))
+def select_nucleotides(arr):
+    return filter.filter_nucleotides(arr)
 
- #  (defn filter-first-altloc [arr] (filter/filter_first_altloc arr))
+def select_peptide_backbone(arr):
+    return filter.filter_peptide_backbone(arr)
 
- #  (defn filter-hetero [arr] (= true (.get_annotation arr "hetero")))
+def select_phosphate_backbone(arr):
+    return filter.filter_phosphate_backbone(arr)
 
- #  (defn filter-highest-occupancy-altloc [arr] (filter/filter_highest_occupancy_altloc arr))
+def select_polymer(arr):
+    return filter.filter_polymer(arr)
 
- #  (defn filter-inscode [arr inscode] (= inscode (.get_annotation arr "ins_code")))
+def select_resid(arr, num):
+    return num == arr.get_annotation("res_id")
 
- #  (defn filter-intersection [arr] (filter/filter_intersection arr))
+def select_resname(arr, res_name):
+    return res_name == arr.get_annotation("res_name")
 
- #  (defn filter-linear-bond-continuity [arr] (filter/filter_linear_bond_continuity arr))
-
- #  (defn filter-monoatomic-ions [arr] (filter/filter_monoatomic_ions arr))
-
- #  (defn filter-nucleotides [arr] (filter/filter_nucleotides arr))
-
- #  (defn filter-peptide-backbone [arr] (filter/filter_peptide_backbone arr))
-
- #  (defn filter-phosphate-backbone [arr] (filter/filter_phosphate_backbone arr))
-
- #  (defn filter-polymer [arr] (filter/filter_polymer arr))
-
- #  (defn filter-resid [arr num] (= num (.get_annotation arr "res_id")))
-
- #  (defn filter-resname [arr res_name] (= res_name (.get_annotation arr "res_name")))
-
- #  (defn filter-solvent [arr] (filter/filter_solvent arr))
+def select_solvent(arr):
+    return filter.filter_solvent(arr)
