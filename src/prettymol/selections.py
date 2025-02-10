@@ -1,13 +1,15 @@
 from biotite.structure import filter
 
-# selector = StructureSelector(structure)
-# mask = (selector
-#         .resid(10)
-#         .resname("ALA")
-#         .chain("A")
-#         .get_mask())
+
 
 class StructureSelector:
+    """
+    example = StructureSelector(structure)
+            .resid(10)
+            .resname("ALA")
+            .chain("A")
+            .get_selection())
+    """
     def __init__(self, structure):
         self.structure = structure
         self.mask = None
