@@ -20,7 +20,6 @@ pip = "*"
 pytest = "*"
 quarto = ">=1.6.40,<2"
 jupyter = ">=1.1.1,<2"
-toolz = ">=1.0.0,<2"
 
 
 [pypi-dependencies]
@@ -48,8 +47,8 @@ python = "==3.11"
 
 
 [tasks]
-jupyter = "jupyter lab"
-remove = "rm -rf /Applications/Blender.app/Contents/Resources/4.3/python"
-test = "basilisp bootstrap && basilisp test --include-path tests/"
 build = "uv build"
-docs = "basilisp bootstrap && quarto preview docs"
+jupyter = "jupyter lab"
+docs-preview = "quarto preview docs"
+docs-build = "quarto render docs"
+remove = "rm -rf /Applications/Blender.app/Contents/Resources/4.3/python"
