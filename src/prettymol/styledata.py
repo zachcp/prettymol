@@ -1,4 +1,4 @@
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, replace, field, fields
 from typing import List, Tuple
 
 
@@ -14,21 +14,26 @@ class BallStickStyle:
     color_blur: bool = False
     shade_smooth: bool = True
 
-
 @dataclass(frozen=True)
 class CartoonStyle:
-    style: str = "cartoon"
-    quality: int = 2
-    dssp: bool = False
-    cylinders: bool = False
-    arrows: bool = True
-    rounded: bool = False
-    thickness: float = 0.6
-    width: float = 2.2
-    loop_radius: float = 0.3
-    smoothing: float = 0.5
-    color_blur: bool = False
-    shade_smooth: bool = True
+    style: str = field(default="cartoon", metadata={"key": "Style"})
+    quality: int = field(default=2, metadata={"key": "Quality"})
+    dssp: bool = field(default=False, metadata={"key": "DSSP"})
+    cylinders: bool = field(default=False, metadata={"key": "Cylinders"})
+    arrows: bool = field(default=True, metadata={"key": "Arrows"})
+    rounded: bool = field(default=False, metadata={"key": "Rounded"})
+    thickness: float = field(default=0.6, metadata={"key": "Thickness"})
+    width: float = field(default=2.2, metadata={"key": "Width"})
+    loop_radius: float = field(default=0.3, metadata={"key": "Loop Radius"})
+    smoothing: float = field(default=0.5, metadata={"key": "Smoothing"})
+    color_blur: bool = field(default=False, metadata={"key": "Color Blur"})
+    shade_smooth: bool = field(default=True, metadata={"key": "Shade Smooth"})
+
+    def get_by_key(self, original_key: str):
+        for f in fields(self):
+            if f.metadata.get('key') == original_key:
+                return getattr(self, f.name)
+        return None
 
 @dataclass(frozen=True)
 class RibbonStyle:

@@ -139,7 +139,7 @@ StyleType = Union[BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, Stick
 #             material_input.default_value = material
 
 
-def draw2(arr: Any, style: StyleType, material: BSDFPrincipled) -> None:
+def draw2(arr: Any, style: CartoonStyle, material: BSDFPrincipled) -> None:
     """
     Take a collection of states corresponding to frames and generate an output
 
@@ -166,8 +166,7 @@ def draw2(arr: Any, style: StyleType, material: BSDFPrincipled) -> None:
             input_name = input.name.lower().replace(" ", "_")
             for field in fields(material):
                 key = field.name
-                value = getattr(style, key)
-                if input_name == key:
+                if (value := style.get_by_key(input_name)):
                     input.default_value = value
 
     # Setup node tree and apply style
@@ -182,13 +181,9 @@ def draw2(arr: Any, style: StyleType, material: BSDFPrincipled) -> None:
         for input in style_node.inputs:
             if input.type != "GEOMETRY":
                 input_name = input.name
-                input_name = input.name.lower().replace(" ", "_")
-                for field in fields(style):
-                    key = field.name
-                    value = getattr(style, key)
-                    if input_name == key:
-                        print(f"{input} {key} {value}")
-                        input.default_value = value
+                if (value := style.get_by_key(input_name)):
+                    print(f"{input} {key} {value}")
+                    input.default_value = value
 
         # Link material to object
         material_input = next((inp for inp in style_node.inputs if inp.name == "Material"), None)
