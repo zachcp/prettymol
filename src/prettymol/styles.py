@@ -6,135 +6,167 @@ representations. It also includes default materials settings for the Principled
 BSDF shader.
 """
 
-default_styles = {
-    'ball+stick': {
-        "Quality": 2,
-        "As Mesh": True,
-        "Sphere Radii": 0.3,
-        "Bond Split": False,
-        "Bond Find": False,
-        "Bond Radius": 0.3,
-        "Color Blur": False,
-        "Shade Smooth": True
-    },
-    'cartoon': {
-        "Quality": 2,
-        "DSSP": False,
-        "Cylinders": False,
-        "Arrows": True,
-        "Rounded": False,
-        "Thickness": 0.6,
-        "Width": 2.2,
-        "Loop Radius": 0.3,
-        "Smoothing": 0.5,
-        "Color Blur": False,
-        "Shade Smooth": True
-    },
-    'ribbon': {
-        "Quality": 3,
-        "Radius": 1.6,
-        "Smoothing": 0.6,
-        "Color Blur": False,
-        "Shade Smooth": False
-    },
-    'spheres': {
-        "As Mesh": True,
-        "Radii": 0.8,
-        "Subdivisions": 2,
-        "Shade Smooth": False
-    },
-    'sticks': {
-        "Quality": 2,
-        "Radius": 0.2,
-        "Color Blur": False,
-        "Shade Smooth": False
-    },
-    'surface': {
-        "Quality": 3,
-        "Separate": True,
-        "Attribute": "chain_id",
-        "Scale Radii": 1.5,
-        "Probe Size": 1.0,
-        "Triangulate": False,
-        "Relaxation Steps": 10,
-        "by CA": False,
-        "Blur": 2,
-        "Shade Smooth": True
-    }
-}
 
-bsdf_principled_defaults = {
-    "Base Color": [0.8, 0.8, 0.8, 1.0],
-    "Metallic": 0.0,
-    "Roughness": 0.2085610330104828,
-    "IOR": 1.4500000476837158,
-    "Alpha": 1.0,
-    "Normal": [0.0, 0.0, 0.0],
-    "Weight": 0.0,
-    "Diffuse Roughness": 0.0,
-    "Subsurface Weight": 0.0,
-    "Subsurface Radius": [1.0, 0.2, 0.1],
-    "Subsurface Scale": 0.05000000074505806,
-    "Subsurface IOR": 1.399999976158142,
-    "Subsurface Anisotropy": 0.0,
-    "Specular IOR Level": 0.5,
-    "Specular Tint": [1.0, 1.0, 1.0, 1.0],
-    "Anisotropic": 0.0,
-    "Anisotropic Rotation": 0.0,
-    "Tangent": [0.0, 0.0, 0.0],
-    "Transmission Weight": 0.0,
-    "Coat Weight": 0.0,
-    "Coat Roughness": 0.029999999329447746,
-    "Coat IOR": 1.5,
-    "Coat Tint": [1.0, 1.0, 1.0, 1.0],
-    "Coat Normal": [0.0, 0.0, 0.0],
-    "Sheen Weight": 0.0,
-    "Sheen Roughness": 0.5,
-    "Sheen Tint": [0.5, 0.5, 0.5, 1.0],
-    "Emission Color": [0.0, 0.0, 0.0, 1.0],
-    "Emission Strength": 0.0,
-    "Thin Film Thickness": 0.0,
-    "Thin Film IOR": 1.3300000429153442
-}
+from dataclasses import dataclass, replace, field, fields
+from typing import List, Tuple
+
+
+@dataclass(frozen=True)
+class StyleBase:
+    def get_by_key(self, original_key: str):
+        for f in fields(self):
+            if f.metadata.get('key') == original_key:
+                return getattr(self, f.name)
+        return None
+
+@dataclass(frozen=True)
+class BallStickStyle(StyleBase):
+    style: str = field(default="ball+stick", metadata={"key": "Style"})
+    quality: int = field(default=2, metadata={"key": "Quality"})
+    as_mesh: bool = field(default=True, metadata={"key": "As Mesh"})
+    sphere_radii: float = field(default=0.3, metadata={"key": "Sphere Radii"})
+    bond_split: bool = field(default=False, metadata={"key": "Bond Split"})
+    bond_find: bool = field(default=False, metadata={"key": "Bond Find"})
+    bond_radius: float = field(default=0.3, metadata={"key": "Bond Radius"})
+    color_blur: bool = field(default=False, metadata={"key": "Color Blur"})
+    shade_smooth: bool = field(default=True, metadata={"key": "Shade Smooth"})
+
+
+@dataclass(frozen=True)
+class CartoonStyle(StyleBase):
+    style: str = field(default="cartoon", metadata={"key": "Style"})
+    quality: int = field(default=2, metadata={"key": "Quality"})
+    dssp: bool = field(default=False, metadata={"key": "DSSP"})
+    cylinders: bool = field(default=False, metadata={"key": "Cylinders"})
+    arrows: bool = field(default=True, metadata={"key": "Arrows"})
+    rounded: bool = field(default=False, metadata={"key": "Rounded"})
+    thickness: float = field(default=0.6, metadata={"key": "Thickness"})
+    width: float = field(default=2.2, metadata={"key": "Width"})
+    loop_radius: float = field(default=0.3, metadata={"key": "Loop Radius"})
+    smoothing: float = field(default=0.5, metadata={"key": "Smoothing"})
+    color_blur: bool = field(default=False, metadata={"key": "Color Blur"})
+    shade_smooth: bool = field(default=True, metadata={"key": "Shade Smooth"})
+
+
+@dataclass(frozen=True)
+class RibbonStyle(StyleBase):
+    style: str = field(default="ribbon", metadata={"key": "Style"})
+    quality: int = field(default=3, metadata={"key": "Quality"})
+    radius: float = field(default=1.6, metadata={"key": "Radius"})
+    smoothing: float = field(default=0.6, metadata={"key": "Smoothing"})
+    color_blur: bool = field(default=False, metadata={"key": "Color Blur"})
+    shade_smooth: bool = field(default=False, metadata={"key": "Shade Smooth"})
+
+@dataclass(frozen=True)
+class SpheresStyle(StyleBase):
+    style: str = field(default="sphere", metadata={"key": "Style"})
+    as_mesh: bool = field(default=True, metadata={"key": "Sphere As Mesh"})
+    radii: float = field(default=0.8, metadata={"key": "Sphere Radii"})
+    subdivisions: int = field(default=2, metadata={"key": "Sphere Subdivisions"})
+    shade_smooth: bool = field(default=False, metadata={"key": "Shade Smooth"})
+
+
+@dataclass(frozen=True)
+class SticksStyle(StyleBase):
+    style: str = field(default="stick", metadata={"key": "Style"})
+    quality: int = field(default=2, metadata={"key": "Quality"})
+    radius: float = field(default=0.2, metadata={"key": "Radius"})
+    color_blur: bool = field(default=False, metadata={"key": "Color Blur"})
+    shade_smooth: bool = field(default=False, metadata={"key": "Shade Smooth"})
+
+
+@dataclass(frozen=True)
+class SurfaceStyle(StyleBase):
+    style: str = field(default="surface", metadata={"key": "Style"})
+    quality: int = field(default=3, metadata={"key": "Quality"})
+    separate: bool = field(default=True, metadata={"key": "Separate"})
+    attribute: str = field(default="chain_id", metadata={"key": "Attribute"})
+    scale_radii: float = field(default=1.5, metadata={"key": "Scale Radii"})
+    probe_size: float = field(default=1.0, metadata={"key": "Probe Size"})
+    triangulate: bool = field(default=False, metadata={"key": "Triangulate"})
+    relaxation_steps: int = field(default=10, metadata={"key": "Relaxation Steps"})
+    by_ca: bool = field(default=False, metadata={"key": "by CA"})
+    blur: int = field(default=2, metadata={"key": "Blur"})
+    shade_smooth: bool = field(default=True, metadata={"key": "Shade Smooth"})
 
 
 
-glare_defaults = {
-    "streaks": {
-        "quality": "MEDIUM",
-        "iterations": 3,
-        "color_modulation": 0.25,
-        "mix": 0.0,
-        "threshold": 1.0,
-        "streaks": 4,
-        "angle_offset": 0.0,
-        "fade": 0.8999999761581421
-    },
-    "bloom": {
-        "quality": "MEDIUM",
-        "mix": 0.0,
-        "threshold": 1.0,
-        "size": 8
-    },
-    "ghosts": {
-        "quality": "MEDIUM",
-        "iterations": 3,
-        "color_modulation": 0.25,
-        "mix": 0.0,
-        "threshold": 1.0
-    },
-    "fog_glow": {
-        "quality": "MEDIUM",
-        "mix": 0.0,
-        "threshold": 1.0,
-        "size": 8
-    },
-    "simple_star": {
-        "quality": "MEDIUM",
-        "iterations": 3,
-        "mix": 0.0,
-        "threshold": 1.0,
-        "fade": 0.8999999761581421,
-        "use_rotate_45": True
-    }
-}
+@dataclass(frozen=True)
+class BSDFPrincipled(StyleBase):
+    base_color: Tuple[float, float, float, float] = field(default=(0.8, 0.8, 0.8, 1.0), metadata={"key": "Base Color"})
+    metallic: float = field(default=0.0, metadata={"key": "Metallic"})
+    roughness: float = field(default=0.2, metadata={"key": "Roughness"})
+    ior: float = field(default=1.45, metadata={"key": "IOR"})
+    alpha: float = field(default=1.0, metadata={"key": "Alpha"})
+    normal: Tuple[float, float, float] = field(default=(0.0, 0.0, 0.0), metadata={"key": "Normal"})
+    weight: float = field(default=0.0, metadata={"key": "Weight"})
+    diffuse_roughness: float = field(default=0.0, metadata={"key": "Diffuse Roughness"})
+    subsurface_weight: float = field(default=0.0, metadata={"key": "Subsurface Weight"})
+    subsurface_radius: Tuple[float, float, float] = field(default=(1.0, 0.2, 0.1), metadata={"key": "Subsurface Radius"})
+    subsurface_scale: float = field(default=0.05, metadata={"key": "Subsurface Scale"})
+    subsurface_ior: float = field(default=1.4, metadata={"key": "Subsurface IOR"})
+    subsurface_anisotropy: float = field(default=0.0, metadata={"key": "Subsurface Anisotropy"})
+    specular_ior_level: float = field(default=0.5, metadata={"key": "Specular IOR Level"})
+    specular_tint: Tuple[float, float, float, float] = field(default=(1.0, 1.0, 1.0, 1.0), metadata={"key": "Specular Tint"})
+    anisotropic: float = field(default=0.0, metadata={"key": "Anisotropic"})
+    anisotropic_rotation: float = field(default=0.0, metadata={"key": "Anisotropic Rotation"})
+    tangent: Tuple[float, float, float] = field(default=(0.0, 0.0, 0.0), metadata={"key": "Tangent"})
+    transmission_weight: float = field(default=0.0, metadata={"key": "Transmission Weight"})
+    coat_weight: float = field(default=0.0, metadata={"key": "Coat Weight"})
+    coat_roughness: float = field(default=0.03, metadata={"key": "Coat Roughness"})
+    coat_ior: float = field(default=1.5, metadata={"key": "Coat IOR"})
+    coat_tint: Tuple[float, float, float, float] = field(default=(1.0, 1.0, 1.0, 1.0), metadata={"key": "Coat Tint"})
+    coat_normal: Tuple[float, float, float] = field(default=(0.0, 0.0, 0.0), metadata={"key": "Coat Normal"})
+    sheen_weight: float = field(default=0.0, metadata={"key": "Sheen Weight"})
+    sheen_roughness: float = field(default=0.5, metadata={"key": "Sheen Roughness"})
+    sheen_tint: Tuple[float, float, float, float] = field(default=(0.5, 0.5, 0.5, 1.0), metadata={"key": "Sheen Tint"})
+    emission_color: Tuple[float, float, float, float] = field(default=(0.0, 0.0, 0.0, 1.0), metadata={"key": "Emission Color"})
+    emission_strength: float = field(default=0.0, metadata={"key": "Emission Strength"})
+    thin_film_thickness: float = field(default=0.0, metadata={"key": "Thin Film Thickness"})
+    thin_film_ior: float = field(default=1.3, metadata={"key": "Thin Film IOR"})
+
+
+
+@dataclass(frozen=True)
+class GlareStreaks(StyleBase):
+    quality: str = field(default="MEDIUM", metadata={"key": "quality"})
+    iterations: int = field(default=3, metadata={"key": "iterations"})
+    color_modulation: float = field(default=0.25, metadata={"key": "color_modulation"})
+    mix: float = field(default=0.0, metadata={"key": "mix"})
+    threshold: float = field(default=1.0, metadata={"key": "threshold"})
+    streaks: int = field(default=4, metadata={"key": "streaks"})
+    angle_offset: float = field(default=0.0, metadata={"key": "angle_offset"})
+    fade: float = field(default=0.9, metadata={"key": "fade"})
+
+
+
+@dataclass(frozen=True)
+class GlareBloom:
+    quality: str = "MEDIUM"
+    mix: float = 0.0
+    threshold: float = 1.0
+    size: int = 8
+
+@dataclass(frozen=True)
+class GlareGhosts:
+    quality: str = "MEDIUM"
+    iterations: int = 3
+    color_modulation: float = 0.25
+    mix: float = 0.0
+    threshold: float = 1.0
+
+@dataclass(frozen=True)
+class GlareFogGlow:
+    quality: str = "MEDIUM"
+    mix: float = 0.0
+    threshold: float = 1.0
+    size: int = 8
+
+@dataclass(frozen=True)
+class GlareSimpleStar:
+    quality: str = "MEDIUM"
+    iterations: int = 3
+    mix: float = 0.0
+    threshold: float = 1.0
+    fade: float = 0.8999999761581421
+    use_rotate_45: bool = True
