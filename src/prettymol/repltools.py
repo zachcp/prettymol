@@ -4,12 +4,11 @@
 import bpy
 import mathutils
 
-class repltools():
+class Repltools():
     def __init__(self):
         self.setup_compositing()
         self._orientation = None
         self._view = self.get_view()
-
 
     def auto_view(self):
         area_type = 'VIEW_3D'

@@ -1,3 +1,12 @@
+"""Constant style definitions for molecular visualization in Blender.
+
+This module contains predefined style settings for different molecular visualization
+modes including ball-and-stick, cartoon, ribbon, spheres, sticks and surface
+representations. It also includes default materials settings for the Principled
+BSDF shader.
+"""
+
+
 from dataclasses import dataclass, replace, field, fields
 from typing import List, Tuple
 

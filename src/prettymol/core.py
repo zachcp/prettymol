@@ -9,6 +9,7 @@ from molecularnodes.entities.molecule import molecule
 from molecularnodes.download import download
 from molecularnodes.blender import nodes as bl_nodes
 
+from .repltools import repltools
 from .styledata import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle, BSDFPrincipled, GlareStreaks, GlareBloom, GlareGhosts, GlareFogGlow, GlareSimpleStar
 
 
@@ -21,33 +22,6 @@ def load_pdb(code):
     arr.bonds = bonds.connect_via_residue_names(arr)
     arr.coord = arr.coord - np.mean(arr.coord, axis=0)
     return arr
-
-
-def create_basic_material(name, stylemap):
-     """
-     Create a basic material with Principled BSDF node and apply style settings.
-
-     Args:
-         name (str): Name of the material
-         stylemap (dict): Dictionary of style settings to override defaults
-
-     Returns:
-         bpy.types.Material: The created material
-     """
-     # Create new material and enable nodes
-     mat = bpy.data.materials.new(name)
-     mat.use_nodes = True
-     bsdf = mat.node_tree.nodes.get("Principled BSDF")
-     styles = merge(bsdf_principled_defaults, stylemap)
-
-     # Iterate through input sockets
-     for input in bsdf.inputs:
-         if input.type != "GEOMETRY":
-             input_name = input.name
-             for key, value in styles.items():
-                 if input_name == key:
-                     setattr(input, "default_value", value)
-     return mat
 
 
 StyleType = Union[BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle]
