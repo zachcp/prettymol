@@ -9,8 +9,7 @@ from molecularnodes.entities.molecule import molecule
 from molecularnodes.download import download
 from molecularnodes.blender import nodes as bl_nodes
 
-from .repltools import repltools
-from .styledata import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle, BSDFPrincipled, GlareStreaks, GlareBloom, GlareGhosts, GlareFogGlow, GlareSimpleStar
+from .styles import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle, BSDFPrincipled, GlareStreaks, GlareBloom, GlareGhosts, GlareFogGlow, GlareSimpleStar
 
 
 

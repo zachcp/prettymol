@@ -1,0 +1,63 @@
+---
+title: "prettymol"
+---
+
+## Quick start
+
+### Prerequisites
+
+- [pixi](https://pixi.sh/latest/). Manages the environment.
+- [Blender](https://www.blender.org) the core viz engine.
+
+
+### Up and running
+
+```sh
+git clone https://github.com/zachcp/prettymol &&  cd prettymol
+
+pixi run remove  # removes Blender's python
+pixi run jupyter # starts Blender AND IPYTHON
+```
+
+
+### Complete Minimal Example
+
+![](images/green_glow.png)
+
+```python
+import bpy
+import mathutils
+from IPython.display import Image, display
+from dataclasses import replace, fields
+from prettymol import draw, load_pdb,  StructureSelector, Repltools
+from prettymol import BSDFPrincipled, CartoonStyle, SpheresStyle, SurfaceStyle
+
+# Load and process structure
+structure = load_pdb("7xbu")
+polymer = StructureSelector(structure).amino_acids().get_selection()
+ligand = StructureSelector(structure).resname("MYN").get_selection()
+
+# repl helpers including managing the view
+rt = Repltools()
+rt.clear()
+
+# Create materials and customize them. Here I am setting the emisssion and color
+surface_material =  BSDFPrincipled()
+cartoon_material =  BSDFPrincipled()
+sticks_material =  replace(
+        BSDFPrincipled(),
+        **{'base_color': [0.15, 1, 0.15, 1],
+           "emission_strength": 1,
+           "emission_color": [0.15, 1, 0.15, 1]})
+
+# Draw fn takes an  AtomArray; a Style; and as Material
+draw(structure, CartoonStyle(), cartoon_material)
+draw(ligand, SpheresStyle(), sticks_material)
+# draw2(structure, styles.SurfaceStyle(), surface_material)
+rt.auto_view()
+
+# Render and view
+bpy.context.scene.render.filepath = '/tmp/output.png'
+bpy.ops.render.render(use_viewport=True, write_still=True)
+display(Image('/tmp/output.png'))
+```

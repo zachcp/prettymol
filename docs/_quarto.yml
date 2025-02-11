@@ -1,0 +1,28 @@
+project:
+  type: website
+
+website:
+  title: "prettymol"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - text: "Examples"
+        menu:
+          - text: "Rapamycin"
+            href: examples/Rapamycin.html
+          - text: "Basilisp Examples"
+            href: basilisp.html
+
+    right:
+      - icon: github
+        href: https://github.com/zachcp/prettymol
+
+format:
+  html:
+    highlight-style: github
+    theme:
+      - cosmo
+      - brand
+    css: styles.css
+    toc: true
