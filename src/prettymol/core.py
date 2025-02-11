@@ -54,18 +54,22 @@ StyleType = Union[BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, Stick
 
 def draw(arr: Any, style: StyleType, material: BSDFPrincipled) -> None:
 
+    # Create object and material
     molname = f"mol_{id(arr)}"
     matname = f"mol_{id(arr)}_mat"
-
-    # Create object
     obj, _ = molecule._create_object(arr, name=molname, style=style.style)
+    bl_nodes.create_starting_node_tree(obj, style=style.style)
+
+    # Setup node tree
+    modifier = next(mod for mod in obj.modifiers if mod.type == "NODES")
+    node_tree = modifier.node_group
+    nodes = node_tree.nodes
+    style_node = next((node for node in nodes if "Style" in node.name), None)
 
     # Create and setup material
     mat = bpy.data.materials.new(matname)
     mat.use_nodes = True
     bsdf = mat.node_tree.nodes.get("Principled BSDF")
-
-    # Apply material properties
     for input in bsdf.inputs:
         if input.type != "GEOMETRY":
             if value := material.get_by_key(input.name):
@@ -77,20 +81,11 @@ def draw(arr: Any, style: StyleType, material: BSDFPrincipled) -> None:
     else:
         obj.data.materials.append(mat)
 
-    # Setup node tree and apply style
-    bl_nodes.create_starting_node_tree(obj, style=style.style)
-    modifier = next(mod for mod in obj.modifiers if mod.type == "NODES")
-    node_tree = modifier.node_group
-    nodes = node_tree.nodes
-    style_node = next((node for node in nodes if "Style" in node.name), None)
-
+    # Apply style and materials
     if style_node:
-        # Apply style properties
         for input in style_node.inputs:
             if input.type != "GEOMETRY":
-                print(input.name)
                 if value := style.get_by_key(input.name):
-                    print(value)
                     input.default_value = value
 
         # Link material to style node

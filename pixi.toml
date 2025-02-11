@@ -47,7 +47,7 @@ python = "==3.11"
 
 
 [tasks]
-jupyter = "jupyter lab"
 docs-preview = "quarto preview docs"
 docs-build = "quarto render docs"
+jupyter = "jupyter lab"
 remove = "rm -rf /Applications/Blender.app/Contents/Resources/4.3/python"
