@@ -51,9 +51,9 @@ class RibbonStyle(StyleBase):
 @dataclass(frozen=True)
 class SpheresStyle(StyleBase):
     style: str = field(default="sphere", metadata={"key": "Style"})
-    as_mesh: bool = field(default=True, metadata={"key": "As Mesh"})
-    radii: float = field(default=0.8, metadata={"key": "Radii"})
-    subdivisions: int = field(default=2, metadata={"key": "Subdivisions"})
+    as_mesh: bool = field(default=True, metadata={"key": "Sphere As Mesh"})
+    radii: float = field(default=0.8, metadata={"key": "Sphere Radii"})
+    subdivisions: int = field(default=2, metadata={"key": "Sphere Subdivisions"})
     shade_smooth: bool = field(default=False, metadata={"key": "Shade Smooth"})
 
 
