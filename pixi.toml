@@ -47,7 +47,6 @@ python = "==3.11"
 
 
 [tasks]
-build = "uv build"
 jupyter = "jupyter lab"
 docs-preview = "quarto preview docs"
 docs-build = "quarto render docs"
