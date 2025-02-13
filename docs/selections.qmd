@@ -1,3 +1,19 @@
 ---
 title: "Selections"
 ---
+
+
+The `StructureSelector` lets you chain together selections. It is a thin
+wrapper on top of Biotite's AtomArray [filters](https://github.com/biotite-dev/biotite/blob/main/src/biotite/structure/filter.py).
+
+```python
+class StructureSelector:
+    """
+    """
+
+example = StructureSelector(structure)
+        .resid(10)
+        .resname("ALA")
+        .chain("A")
+        .get_selection())
+```
