@@ -7,11 +7,11 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: Materials.html
+      - href: materials.html
         text: Materials
-      - href: Selections.html
+      - href: selections.html
         text: Selections
-      - href: Styles.html
+      - href: styles.html
         text: Styles
 
     right:

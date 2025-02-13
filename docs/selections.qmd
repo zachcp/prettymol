@@ -8,9 +8,36 @@ wrapper on top of Biotite's AtomArray [filters](https://github.com/biotite-dev/b
 
 ```python
 class StructureSelector:
-    """
-    """
+    # selectors
+    def amino_acids(self):
+    def canonical_amino_acids(self):
+    def canonical_nucleotides(self):
+    def carbohydrates(self):
+    def first_altloc(self):
+    def hetero(self):
+    def highest_occupancy_altloc(self):
+    def linear_bond_continuity(self):
+    def monoatomic_ions(self):
+    def nucleotides(self):
+    def peptide_backbone(self):
+    def phosphate_backbone(self):
+    def polymer(self):
+    def solvent(self):
 
+    # selectors with params
+    def atomname(self, atomname):
+    def chain(self, chain_id):
+    def element(self, element):
+    def inscode(self, inscode):
+    def resid(self, num):
+    def resname(self, res_name):
+
+    # gets the mask or the seletion as an AtomArray
+    def get_mask(self):
+    def get_selection(self):
+
+# usage. chain the selctions together.
+# get back an array using `get_selection`
 example = StructureSelector(structure)
         .resid(10)
         .resname("ALA")
