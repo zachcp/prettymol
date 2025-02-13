@@ -2,6 +2,7 @@
 # repltools is the class for all repl-related utlity functions
 #
 import bpy
+import math
 import mathutils
 
 class Repltools():
@@ -179,3 +180,146 @@ class Repltools():
             # Fallback behavior for non-IPython environments
             print("Image saved to /tmp/output.png")
             return '/tmp/output.png'
+
+    def lighting_setup_three_point_lighting(self):
+        # Clear existing lights
+        for obj in bpy.data.objects:
+            if obj.type == 'LIGHT':
+                bpy.data.objects.remove(obj)
+
+        # Key Light (main light)
+        key_light = bpy.data.lights.new(name="Key_Light", type='AREA')
+        key_light.energy = 1000
+        key_light.size = 5
+        key_light_obj = bpy.data.objects.new(name="Key_Light", object_data=key_light)
+        bpy.context.scene.collection.objects.link(key_light_obj)
+        key_light_obj.location = (6, -4, 8)
+        key_light_obj.rotation_euler = (0.5, 0.2, -0.3)
+
+        # Fill Light
+        fill_light = bpy.data.lights.new(name="Fill_Light", type='AREA')
+        fill_light.energy = 500
+        fill_light.size = 5
+        fill_light_obj = bpy.data.objects.new(name="Fill_Light", object_data=fill_light)
+        bpy.context.scene.collection.objects.link(fill_light_obj)
+        fill_light_obj.location = (-6, 2, 3)
+        fill_light_obj.rotation_euler = (0.3, -0.2, 0.5)
+
+        # Back Light
+        back_light = bpy.data.lights.new(name="Back_Light", type='AREA')
+        back_light.energy = 750
+        back_light.size = 5
+        back_light_obj = bpy.data.objects.new(name="Back_Light", object_data=back_light)
+        bpy.context.scene.collection.objects.link(back_light_obj)
+        back_light_obj.location = (-2, -6, 5)
+        back_light_obj.rotation_euler = (0.7, -0.2, -2.0)
+
+    def lighting_setup_hdri_lighting(self):
+        # Set up world node tree
+        world = bpy.context.scene.world
+        world.use_nodes = True
+        nodes = world.node_tree.nodes
+        links = world.node_tree.links
+
+        # Clear existing nodes
+        nodes.clear()
+
+        # Add nodes
+        node_background = nodes.new('ShaderNodeBackground')
+        node_environment = nodes.new('ShaderNodeTexEnvironment')
+        node_mapping = nodes.new('ShaderNodeMapping')
+        node_tex_coord = nodes.new('ShaderNodeTexCoord')
+        node_output = nodes.new('ShaderNodeOutputWorld')
+
+        # Link nodes
+        links.new(node_tex_coord.outputs['Generated'], node_mapping.inputs['Vector'])
+        links.new(node_mapping.outputs['Vector'], node_environment.inputs['Vector'])
+        links.new(node_environment.outputs['Color'], node_background.inputs['Color'])
+        links.new(node_background.outputs['Background'], node_output.inputs['Surface'])
+
+        # Adjust world strength
+        node_background.inputs['Strength'].default_value = 1.0
+
+    def lighting_setup_rim_lighting(self):
+        # Create rim lights
+        for i in range(8):
+            angle = i * (360/8)
+            x = 6 * math.cos(math.radians(angle))
+            y = 6 * math.sin(math.radians(angle))
+
+            rim_light = bpy.data.lights.new(name=f"Rim_Light_{i}", type='AREA')
+            rim_light.energy = 200
+            rim_light.size = 2
+            rim_light_obj = bpy.data.objects.new(name=f"Rim_Light_{i}", object_data=rim_light)
+            bpy.context.scene.collection.objects.link(rim_light_obj)
+            rim_light_obj.location = (x, y, 3)
+            rim_light_obj.rotation_euler = (0.5, 0, math.radians(angle + 180))
+
+    def lighting_setup_volumetric_lighting(self):
+        # Set up volumetric lighting
+        bpy.context.scene.eevee.use_volumetric_lights = True
+        bpy.context.scene.eevee.volumetric_samples = 64
+
+        # Create a strong spot light
+        spot = bpy.data.lights.new(name="Volumetric_Spot", type='SPOT')
+        spot.energy = 5000
+        spot.spot_size = math.radians(30)
+        spot.spot_blend = 0.5
+        spot_obj = bpy.data.objects.new(name="Volumetric_Spot", object_data=spot)
+        bpy.context.scene.collection.objects.link(spot_obj)
+        spot_obj.location = (5, -5, 8)
+        spot_obj.rotation_euler = (0.9, 0.2, -0.6)
+
+
+    def lighting_setup_scientific_lighting(self):
+        # Main top light
+        top_light = bpy.data.lights.new(name="Top_Light", type='SUN')
+        top_light.energy = 5
+        top_light_obj = bpy.data.objects.new(name="Top_Light", object_data=top_light)
+        bpy.context.scene.collection.objects.link(top_light_obj)
+        top_light_obj.rotation_euler = (0, 0, 0)
+
+        # Ambient light spheres
+        for i in range(6):
+            for j in range(3):
+                angle = i * (360/6)
+                z = 3 * (j - 1)
+                x = 8 * math.cos(math.radians(angle))
+                y = 8 * math.sin(math.radians(angle))
+
+                amb_light = bpy.data.lights.new(name=f"Ambient_{i}_{j}", type='POINT')
+                amb_light.energy = 100
+                amb_light_obj = bpy.data.objects.new(name=f"Ambient_{i}_{j}", object_data=amb_light)
+                bpy.context.scene.collection.objects.link(amb_light_obj)
+                amb_light_obj.location = (x, y, z)
+
+    def lighting_adjust_light_intensity(self, multiplier=1.0):
+        """Adjust all light intensities by a multiplier"""
+        for obj in bpy.data.objects:
+            if obj.type == 'LIGHT':
+                obj.data.energy *= multiplier
+
+    def clear_cache(self):
+        bpy.context.view_layer.update()
+        bpy.ops.outliner.orphans_purge(do_recursive=True)
+
+        for mesh in bpy.data.meshes:
+            bpy.data.meshes.remove(mesh)
+        for material in bpy.data.materials:
+            bpy.data.materials.remove(material)
+        # for obj in bpy.data.objects:
+        #     bpy.data.objects.remove(obj)
+
+        bpy.context.view_layer.update()
+
+    # def lighting_set_light_color(color=(1, 1, 1, 1)):
+    #     """Set color for all lights"""
+    #     for obj in bpy.data.objects:
+    #         if obj.type == 'LIGHT':
+    #             obj.data.color = color[:3]
+    #
+    # def setup_ambient_occlusion():
+        # """Setup ambient occlusion for better detail"""
+        # bpy.context.scene.eevee.use_gtao = True
+        # bpy.context.scene.eevee.gtao_distance = 0.2
+        # bpy.context.scene.eevee.gtao_factor = 1.0
