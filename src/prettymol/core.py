@@ -13,6 +13,7 @@ from .styles import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, Sti
 
 
 
+
 # Connect bonds and center the structure
 def load_pdb(code):
     cif_file = download(code)
