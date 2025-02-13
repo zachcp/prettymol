@@ -25,12 +25,11 @@ pixi run jupyter # starts Blender AND IPYTHON
 ![](images/green_glow.png)
 
 ```python
-import bpy
-import mathutils
 from IPython.display import Image, display
 from dataclasses import replace, fields
+
 from prettymol import draw, load_pdb,  StructureSelector, Repltools
-from prettymol import BSDFPrincipled, CartoonStyle, SpheresStyle, SurfaceStyle
+from prettymol import Material, CartoonStyle, SpheresStyle, SurfaceStyle
 
 # Load and process structure
 structure = load_pdb("7xbu")
@@ -42,10 +41,10 @@ rt = Repltools()
 rt.clear()
 
 # Create materials and customize them. Here I am setting the emisssion and color
-surface_material =  BSDFPrincipled()
-cartoon_material =  BSDFPrincipled()
+surface_material =  Material()
+cartoon_material =  Material()
 sticks_material =  replace(
-        BSDFPrincipled(),
+        Material(),
         **{'base_color': [0.15, 1, 0.15, 1],
            "emission_strength": 1,
            "emission_color": [0.15, 1, 0.15, 1]})
