@@ -39,7 +39,7 @@ class Repltools():
         self._view = self.get_view()
         return self
 
-    def set_view_axis(self, axis="x", distance=10):
+    def set_view_axis(self, axis="x", distance=5):
         camera = bpy.context.scene.camera
         if camera is not None:
             match axis:
