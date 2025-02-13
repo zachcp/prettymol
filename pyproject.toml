@@ -13,6 +13,9 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
 [dependency-groups]
 dev = ["ipython", "jupyter", "pytest"]
 
