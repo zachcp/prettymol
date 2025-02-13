@@ -3,7 +3,6 @@ from typing import List, Tuple
 from .styles import StyleBase
 
 
-
 @dataclass(frozen=True)
 class GlareStreaks(StyleBase):
     quality: str = field(default="MEDIUM", metadata={"key": "quality"})

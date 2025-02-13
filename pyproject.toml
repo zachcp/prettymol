@@ -1,11 +1,17 @@
 [project]
 name = "prettymol"
 version = "0.1.0"
-description = "Add your description here"
+description = "make molecules. pretty"
 readme = "README.md"
 requires-python = "==3.11.*"
 dependencies = ["biotite", "bpy", "molecularnodes"]
 packages = [{ include = "prettymol", from = "src" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
 
 [dependency-groups]
 dev = ["ipython", "jupyter", "pytest"]

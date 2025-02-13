@@ -7,8 +7,10 @@ import mathutils
 class Repltools():
     def __init__(self):
         self.setup_compositing()
+        self.clear()
         self._orientation = None
-        self._view = self.get_view()
+        self.set_view_axis()
+
 
     def auto_view(self):
         area_type = 'VIEW_3D'
@@ -35,6 +37,32 @@ class Repltools():
             col.hide_viewport = False
 
         self._view = self.get_view()
+        return self
+
+    def set_view_axis(self, axis="x", distance=5):
+        camera = bpy.context.scene.camera
+        if camera is not None:
+            match axis:
+                case 'x':
+                    camera.location = mathutils.Vector((distance, 0, 0))  # Move along X-axis
+                case 'y':
+                    camera.location = mathutils.Vector((0, distance, 0))  # Move along Y-axis
+                case 'z':
+                    camera.location = mathutils.Vector((0, 0, distance))  # Move along Z-axis
+                case _:
+                    print(f"Invalid axis: {axis}. Choose from 'x', 'y', or 'z'.")
+
+            # Point the camera to look at the origin (0, 0, 0)
+            direction = camera.location - mathutils.Vector((0, 0, 0))
+            rot_quat = direction.to_track_quat('Z', 'Y')
+            camera.rotation_euler = rot_quat.to_euler()
+            area = next(area for area in bpy.context.screen.areas if area.type == 'VIEW_3D')
+            region = next(region for region in area.regions if region.type == 'WINDOW')
+
+            for area in bpy.context.screen.areas:
+                if area.type == 'VIEW_3D':
+                    area.spaces[0].region_3d.view_perspective = 'CAMERA'
+
         return self
 
     def rotate_view(self, degrees):
