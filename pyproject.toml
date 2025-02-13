@@ -13,8 +13,8 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-[dependency-groups]
-dev = ["ipython", "jupyter", "pytest"]
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ipython", "jupyter", "pytest"]
 
 [build-system]
 requires = ["hatchling"]

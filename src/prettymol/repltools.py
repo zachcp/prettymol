@@ -160,3 +160,22 @@ class Repltools():
         if area3d and region3d and camera:
             bpy.context.scene.camera.matrix_world = mmat
             region3d.view_matrix = mmat.inverted()
+
+    def render_view(self):
+        print("in the repl render_view")
+        try:
+            from IPython.display import Image, display
+            use_ipython = True
+        except NameError:
+            use_ipython = False
+
+        # Render and save the image
+        bpy.context.scene.render.filepath = '/tmp/output.png'
+        bpy.ops.render.render(use_viewport=True, write_still=True)
+
+        if use_ipython:
+            return display(Image('/tmp/output.png'))
+        else:
+            # Fallback behavior for non-IPython environments
+            print("Image saved to /tmp/output.png")
+            return '/tmp/output.png'
