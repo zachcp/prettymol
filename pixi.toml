@@ -13,23 +13,23 @@ python = "==3.11"
 prettymol = { path = "." }
 # ffmpeg-python = "*"
 # ffmpeg = "*"
-# opencv = "*"
-numpy = "<2"
-ipython = "*"
-# pip = "*"
-# pytest = "*"
-# rdkit = "*"
-# quarto = ">=1.6.40,<2"
+s# opencv = "*"
+# pip = "*"ipython = "*"
 jupyter = ">=1.1.1,<2"
-boost = ">=1.84.0,<2"
+# pytest = "*"
+quarto = ">=1.6.40,<2"
+# rdkit = "==2024.09.5" # c++ crash
+# rdkit = "==2024.03.6" # c++ crash
+# rdkit = "==2023.09.1" # c++ crash
+rdkit = "*"
+
 
 [pypi-dependencies]
-biotite = { git = "https://github.com/biotite-dev/biotite", rev = "4c7204afd07c489117243fd8ad4a67f787a4a820" }
+biotite = "*"
 blender_notebook = "*"
 bpy = "*"
-databpy = { git = "https://github.com/BradyAJohnston/databpy" }
+databpy = "*"
 molecularnodes = { git = "https://github.com/BradyAJohnston/MolecularNodes.git" }
-rdkit = "*"
 
 [package]
 name = "prettymol"
@@ -48,7 +48,9 @@ python = "==3.11"
 
 
 [tasks]
+clear-kernels = "rm -rf ~/Library/Jupyter/kernels/*"
 docs-preview = "quarto preview docs"
 docs-build = "quarto render docs"
+install-repl = "blender_notebook install --blender-exec=\"/Applications/Blender.app/Contents/MacOS/Blender\""
 jupyter = "jupyter lab"
 remove = "rm -rf /Applications/Blender.app/Contents/Resources/4.3/python"
