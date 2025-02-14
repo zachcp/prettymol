@@ -13,7 +13,7 @@ python = "==3.11"
 prettymol = { path = "." }
 # ffmpeg-python = "*"
 # ffmpeg = "*"
-s# opencv = "*"
+# opencv = "*"
 # pip = "*"ipython = "*"
 jupyter = ">=1.1.1,<2"
 # pytest = "*"
