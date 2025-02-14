@@ -1,6 +1,6 @@
 [project]
 name = "prettymol"
-version = "0.1.0"
+version = "0.1.0.a1"
 description = "make molecules. pretty"
 readme = "README.md"
 requires-python = "==3.11.*"
@@ -13,8 +13,13 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+[project.urls]
+Homepage = "https://github.com/zachcp/prettymol"
+Issues = "https://github.com/zachcp/prettymol/issues"
+
+
 [project.optional-dependencies]
-dev = ["pytest>=7.0", "ipython", "jupyter", "pytest"]
+dev = ["pytest>=7.0"]
 
 [build-system]
 requires = ["hatchling"]

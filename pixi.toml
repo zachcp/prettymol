@@ -11,24 +11,25 @@ preview = ["pixi-build"]
 [dependencies]
 python = "==3.11"
 prettymol = { path = "." }
-ffmpeg-python = "*"
-ffmpeg = "*"
-opencv = "*"
-numpy = "<2.0"
+# ffmpeg-python = "*"
+# ffmpeg = "*"
+# opencv = "*"
+numpy = "<2"
 ipython = "*"
-pip = "*"
-pytest = "*"
-quarto = ">=1.6.40,<2"
+# pip = "*"
+# pytest = "*"
+# rdkit = "*"
+# quarto = ">=1.6.40,<2"
 jupyter = ">=1.1.1,<2"
-
+boost = ">=1.84.0,<2"
 
 [pypi-dependencies]
-biotite = "*"
+biotite = { git = "https://github.com/biotite-dev/biotite", rev = "4c7204afd07c489117243fd8ad4a67f787a4a820" }
 blender_notebook = "*"
 bpy = "*"
-databpy = "*"
-molecularnodes = "*"
-
+databpy = { git = "https://github.com/BradyAJohnston/databpy" }
+molecularnodes = { git = "https://github.com/BradyAJohnston/MolecularNodes.git" }
+rdkit = "*"
 
 [package]
 name = "prettymol"
