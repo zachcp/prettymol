@@ -13,11 +13,9 @@ python = "==3.11"
 prettymol = { path = "." }
 # ffmpeg-python = "*"
 # ffmpeg = "*"
-ipython = "*"
+s# opencv = "*"
+# pip = "*"ipython = "*"
 jupyter = ">=1.1.1,<2"
-# numpy = "<2"
-# opencv = "*"
-# pip = "*"y
 # pytest = "*"
 quarto = ">=1.6.40,<2"
 # rdkit = "==2024.09.5" # c++ crash
