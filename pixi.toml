@@ -19,15 +19,15 @@ jupyter = ">=1.1.1,<2"
 # opencv = "*"
 # pip = "*"y
 # pytest = "*"
-# quarto = ">=1.6.40,<2"
+quarto = ">=1.6.40,<2"
 # rdkit = "==2024.09.5" # c++ crash
 # rdkit = "==2024.03.6" # c++ crash
-rdkit = "==2023.09.1" # c++ crash
-# rdkit = "*"
+# rdkit = "==2023.09.1" # c++ crash
+rdkit = "*"
 
 
 [pypi-dependencies]
-biotite = { git = "https://github.com/biotite-dev/biotite", rev = "4c7204afd07c489117243fd8ad4a67f787a4a820" }
+biotite = "*"
 blender_notebook = "*"
 bpy = "*"
 databpy = "*"
