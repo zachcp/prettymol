@@ -15,9 +15,10 @@ prettymol = { path = "." }
 # ffmpeg = "*"
 # opencv = "*"
 numpy = "<2"
-# pip = "*"ipython = "*"
+# pip = "*
+# "ipython = "*"
 jupyter = ">=1.1.1,<2"
-# pytest = "*"
+pytest = "*"
 quarto = ">=1.6.40,<2"
 # rdkit = "==2024.09.5" # c++ crash
 # rdkit = "==2024.03.6" # c++ crash
@@ -31,6 +32,7 @@ blender_notebook = "*"
 bpy = "*"
 databpy = "*"
 molecularnodes = "*"
+
 
 [package]
 name = "prettymol"
@@ -55,3 +57,4 @@ docs-build = "quarto render docs"
 install-repl = "blender_notebook install --blender-exec=\"/Applications/Blender.app/Contents/MacOS/Blender\""
 jupyter = "jupyter lab"
 remove = "rm -rf /Applications/Blender.app/Contents/Resources/4.3/python"
+test-image = "prettymol --code 1FAP --output prettymol.png"

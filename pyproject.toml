@@ -1,10 +1,10 @@
 [project]
 name = "prettymol"
-version = "0.1.0.a1"
+version = "0.1.0"
 description = "make molecules. pretty"
 readme = "README.md"
 requires-python = "==3.11.*"
-dependencies = ["biotite>=1.1", "bpy", "molecularnodes>=4.2.12"]
+dependencies = ["biotite>=1.1", "bpy", "molecularnodes>=4.2.12", "click"]
 packages = [{ include = "prettymol", from = "src" }]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -17,6 +17,9 @@ classifiers = [
 Homepage = "https://github.com/zachcp/prettymol"
 Issues = "https://github.com/zachcp/prettymol/issues"
 
+
+[project.scripts]
+prettymol = "prettymol.cli:cli"
 
 [project.optional-dependencies]
 dev = ["pytest>=7.0"]
