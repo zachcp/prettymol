@@ -3,14 +3,34 @@ title: "Materials"
 ---
 
 
-# Materials
+# Example Materials
 
-As above, you can create a material and then override any of it's properties. When you start `prettymol` compositing is enabled so
+::: {layout="[[1,1,1,1], [1,1,1,1]]"}
+![](./images/materials/loop_01.png)
+
+![](./images/materials/loop_02.png)
+
+![](./images/materials/loop_03.png)
+
+![](./images/materials/loop_04.png)
+
+![](./images/materials/loop_05.png)
+
+![](./images/materials/loop_06.png)
+
+![](./images/materials/loop_07.png)
+
+![](./images/materials/loop_08.png)
+:::
+
+
+# Blender Materials
+
+You can create a material and then override any of it's properties. When you start `prettymol` compositing is enabled so
 you can use `emission` to make objects glow. The material is based on Blender's [Principled BSDF](https://docs.blender.org/manual/en/latest/render/shader_nodes/shader/principled.html)
 which should allow you to create essentially any arbitrary material surface.
 
 ```python
-
 class BSDFPrincipled():
     base_color: Tuple[float, float, float, float] = (0.8, 0.8, 0.8, 1.0)
     metallic: float = 0.0
