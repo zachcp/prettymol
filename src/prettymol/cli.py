@@ -21,7 +21,7 @@ def cli(code, output):
 
     # setup the scene
     polymer = StructureSelector(structure).amino_acids().get_selection()
-    ligand = StructureSelector(structure).resname("MYN").get_selection()
+    ligand = StructureSelector(structure).resname("RAP").get_selection()
 
     # draw the molecu
     draw(polymer, CartoonStyle(), Material())
