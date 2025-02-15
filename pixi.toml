@@ -15,7 +15,8 @@ prettymol = { path = "." }
 # ffmpeg = "*"
 # opencv = "*"
 numpy = "<2"
-# pip = "*"ipython = "*"
+# pip = "*
+# "ipython = "*"
 jupyter = ">=1.1.1,<2"
 pytest = "*"
 quarto = ">=1.6.40,<2"
