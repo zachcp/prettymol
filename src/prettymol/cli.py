@@ -3,15 +3,17 @@ import bpy
 from .core import load_pdb, draw
 from .materials import Material
 from .styles import CartoonStyle
+from .repltools import Repltools
 
 
 @click.command()
-@click.argument('code')
-@click.argument('output')
+@click.option('--code', required=True, help='PDB code of the molecule')
+@click.option('--output', required=True, help='Output file path for the rendered image')
 def cli(code, output):
     """Generate molecular structure image from code"""
     struct = load_pdb(code)
 
+    rt = Repltools()  # does the basic setup
     draw(struct, CartoonStyle(), Material())
 
     bpy.context.scene.render.filepath = output

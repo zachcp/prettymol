@@ -6,3 +6,11 @@
 
 
 Make molecules. pretty.
+
+
+
+## CLI
+
+```sh
+prettymol --code 1FAP --output prettymol.png
+```
