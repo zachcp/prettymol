@@ -1,0 +1,235 @@
+---
+title: "Molstar"
+kernel: "blender"
+---
+
+
+# MolViewSpec
+
+https://molstar.org/mol-view-spec/
+
+## Example 01
+
+```{python}
+from prettymol import draw, load_pdb
+from prettymol import CartoonStyle, Material, Repltools
+
+rt = Repltools()
+structure = load_pdb("1cbs")
+draw(structure, CartoonStyle(), Material())
+rt.set_view_axis(distance=1.2)  # try changing this
+rt.render_view()
+```
+
+## Example 02
+
+
+```{python}
+# builder = create_builder()
+# structure = (builder
+#    .download(url="https://www.ebi.ac.uk/pdbe/entry-files/download/1lap_updated.cif")
+#    .parse(format="mmcif")
+#    .model_structure())
+#
+# Reference a residue of interest
+# residue = ComponentExpression(label_asym_id="A", label_seq_id=120)
+#
+# Represent everything as cartoon & color the residue red
+# whole = structure.component()
+# (whole
+#    .representation()
+#    .color(color="red", selector=ComponentExpression(label_asym_id="A", label_seq_id=120)))
+#
+# label the residues with custom text & focus it
+# (structure
+#    .component(selector=residue)
+#    .label(text="ALA 120 A: My Label")
+#    .focus())
+# return builder.get_state()
+
+from prettymol import draw, load_pdb
+from prettymol import CartoonStyle, Material, Repltools
+
+rt = Repltools()
+structure = load_pdb("1lap")
+draw(structure, CartoonStyle(), Material())
+rt.set_view_axis(distance=1.2)  # try changing this
+rt.render_view()
+```
+
+
+
+## Example 03
+
+```python
+builder = mvs.create_builder()
+
+structure = (builder
+    .download(url="https://www.ebi.ac.uk/pdbe/entry-files/download/1c0a_updated.cif")
+    .parse(format="mmcif")
+    .assembly_structure()
+)
+
+# represent protein & RNA as cartoon
+(
+    structure.component(selector="protein")
+    .representation()
+    .color(color="#e19039")
+)
+(
+    structure.component(selector="nucleic")
+    .representation()
+    .color(color="#4b7fcc")
+)
+# represent ligand in active site as ball-and-stick
+ligand = structure.component(selector=mvs.ComponentExpression(label_asym_id='E'))
+ligand.representation(type="ball_and_stick").color(color="#229954")
+
+# represent 2 crucial arginine residues as red ball-and-stick and label with custom text
+arg_b_217 = (structure
+    .component(selector=mvs.ComponentExpression(label_asym_id="B", label_seq_id=217))
+)
+arg_b_217.representation(type="ball_and_stick").color(color="#ff0000")
+arg_b_217.label(text="aaRS Class II Signature")
+arg_b_537 = (structure
+    .component(selector=mvs.ComponentExpression(label_asym_id="B", label_seq_id=537))
+)
+arg_b_537.representation(type="ball_and_stick").color(color="#ff0000")
+arg_b_537.label(text="aaRS Class II Signature")
+
+# position camera to zoom in on ligand and signature residues
+focus = (structure.component(selector=[
+    mvs.ComponentExpression(label_asym_id='E'),
+    mvs.ComponentExpression(label_asym_id="B", label_seq_id=217),
+    mvs.ComponentExpression(label_asym_id="B", label_seq_id=537)
+]).focus()
+
+return builder.get_state()
+```
+
+
+
+
+
+## Example 04
+
+```python
+
+builder = create_builder()
+
+# Load first structure and color it red
+(builder
+    .download(url="https://www.ebi.ac.uk/pdbe/entry-files/download/4hhb_updated.cif")
+    .parse(format="mmcif")
+    .model_structure()
+    .component()
+    .representation()
+    .color(color="red")
+)
+
+# Load second structure, apply matrix transform, and color it blue
+(builder
+    .download(url="https://www.ebi.ac.uk/pdbe/entry-files/download/1oj6_updated.cif")
+    .parse(format="mmcif")
+    .model_structure()
+    .transform(
+        rotation=[
+            -0.7202161, -0.33009904, -0.61018308,
+            0.36257631, 0.57075962, -0.73673053,
+            0.59146191, -0.75184312, -0.29138417
+        ],
+        translation=[-12.54, 46.79, 94.50]
+    )
+    .component()
+    .representation()
+    .color(color="blue")
+)
+
+return builder.get_state()
+```
+
+
+
+
+# Example 05
+
+```python
+builder = create_builder()
+structure = (builder
+    .download(url="https://www.ebi.ac.uk/pdbe/entry-files/download/1tqn_updated.cif")
+    .parse(format="mmcif")
+    .symmetry_structure(ijk_min=(-1, -1, -1), ijk_max=(1, 1, 1))
+    .component()
+    .representation()
+    .color(color="teal")
+)
+
+return builder.get_state()
+```
+
+
+# Example 06
+
+```python
+builder = create_builder()
+
+structure_url = "https://files.wwpdb.org/download/1h9t.cif"
+annotation_url = "https://molstar.org/mol-view-spec/examples/annotations/annotations-1h9t.cif"
+
+# Load structure
+structure = (builder
+             .download(url=structure_url)
+             .parse(format="mmcif")
+             .model_structure()
+             )
+
+# Create components using MVS annotations
+protein = structure.component_from_uri(
+    uri=annotation_url, format="cif",
+    block_header="1h9t_annotations", category_name="components",
+    field_name="component", field_values="Protein", schema="chain")
+dna = structure.component_from_uri(
+    uri=annotation_url, format="cif",
+    category_name="components", field_values="DNA", schema="chain")
+ions = structure.component_from_uri(
+    uri=annotation_url, format="cif",
+    category_name="components", field_values=["Gold", "Chloride"],
+    schema="chain")
+
+# Create representations
+protein_repr = protein.representation(type="cartoon")
+dna_repr = dna.representation(type="ball_and_stick")
+ions_repr = ions.representation(type="surface")
+
+# Apply coloring using MVS annotations
+protein_repr.color_from_uri(
+    uri=annotation_url, format="cif",
+    block_header="1h9t_annotations", category_name="annotations",
+    field_name="color", schema="residue_range")
+dna_repr.color_from_uri(
+    uri=annotation_url, format="cif",
+    category_name="annotations", schema="residue_range")
+ions_repr.color_from_uri(
+    uri=annotation_url, format="cif",
+    category_name="annotations", schema="residue_range")
+
+# Add labels using MVS annotations
+structure.label_from_uri(
+    uri=annotation_url, format="cif",
+    block_header="1h9t_annotations", category_name="annotations",
+    field_name="label", schema="residue_range")
+
+# Add tooltips using MVS annotations
+structure.tooltip_from_uri(
+    uri=annotation_url, format="cif",
+    block_header="1h9t_annotations", category_name="annotations",
+    field_name="label", schema="residue_range")
+
+return builder.get_state()
+```
+
+
+
+# MolStar
+
+https://molstar.org
