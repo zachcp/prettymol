@@ -26,11 +26,11 @@ rdkit = "*"
 
 
 [pypi-dependencies]
-biotite = "*"
+biotite = ">=1.1"
 blender_notebook = "*"
 bpy = "*"
 databpy = "*"
-molecularnodes = { git = "https://github.com/BradyAJohnston/MolecularNodes.git" }
+molecularnodes = "*"
 
 [package]
 name = "prettymol"
