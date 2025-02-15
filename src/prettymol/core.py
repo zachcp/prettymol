@@ -5,7 +5,7 @@ from biotite.structure.io import pdbx
 from biotite import structure as struct
 from biotite.structure import bonds
 from dataclasses import replace, fields
-from molecularnodes.entities.molecule import molecule
+from molecularnodes.entities.molecule.base import _create_object
 from molecularnodes.download import download
 from molecularnodes.blender import nodes as bl_nodes
 
@@ -31,7 +31,7 @@ def draw(arr: Any, style: StyleType, material: BSDFPrincipled) -> None:
     # Create object and material
     molname = f"mol_{id(arr)}"
     matname = f"mol_{id(arr)}_mat"
-    obj, _ = molecule._create_object(arr, name=molname, style=style.style)
+    obj, _ = _create_object(arr, name=molname)
     bl_nodes.create_starting_node_tree(obj, style=style.style)
 
     # Setup node tree
