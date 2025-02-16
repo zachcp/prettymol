@@ -4,6 +4,7 @@
 import bpy
 import math
 import mathutils
+from .lighting import LightingCreator, BlenderLight
 
 class Repltools():
     def __init__(self):
