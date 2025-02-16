@@ -2,7 +2,7 @@ from dataclasses import dataclass, replace, field, fields
 from typing import List, Tuple
 from .styles import StyleBase
 
-
+__all__ = ['Material', 'MaterialCreator']
 
 @dataclass(frozen=True)
 class Material(StyleBase):
@@ -42,3 +42,118 @@ class Material(StyleBase):
     emission_strength: float = field(default=0.0, metadata={"key": "Emission Strength"})
     thin_film_thickness: float = field(default=0.0, metadata={"key": "Thin Film Thickness"})
     thin_film_ior: float = field(default=1.3, metadata={"key": "Thin Film IOR"})
+
+
+class MaterialCreator():
+    def __init__(self):
+        pass
+
+    def new(self) -> Material:
+        return Material()
+
+    def new_neon(self) -> Material:
+        return replace(Material(),
+            base_color=(0.0, 1.0, 0.8, 1.0),
+            emission_strength=5.0,
+            emission_color=(0.0, 1.0, 0.8, 1.0),
+            metallic=0.8,
+            roughness=0.1)
+
+    def new_glass(self) -> Material:
+        return replace(Material(),
+            base_color=(0.8, 0.9, 1.0, 0.2),
+            transmission_weight=0.95,
+            roughness=0.0,
+            ior=1.45,
+            specular_ior_level=0.6
+        )
+
+    def new_metallic(self) -> Material:
+        return replace(Material(),
+            base_color=(0.7, 0.7, 0.7, 1.0),
+            metallic=1.0,
+            roughness=0.1,
+            specular_ior_level=0.9,
+            coat_weight=1.0
+        )
+
+    def new_holo(self) -> Material:
+        return replace(Material(),
+            base_color=(0.2, 0.6, 1.0, 0.3),
+            emission_strength=2.0,
+            emission_color=(0.2, 0.6, 1.0, 1.0),
+            transmission_weight=0.8,
+            thin_film_thickness=1000
+        )
+
+    def new_gold(self) -> Material:
+        return replace(Material(),
+            base_color=(1.0, 0.8, 0.2, 1.0),
+            metallic=1.0,
+            roughness=0.3,
+            anisotropic=0.8,
+            anisotropic_rotation=0.5
+        )
+
+    def new_velvet(self) -> Material:
+        return replace(Material(),
+            base_color=(0.5, 0.0, 0.2, 1.0),
+            sheen_weight=1.0,
+            sheen_roughness=0.3,
+            sheen_tint=(1.0, 0.8, 0.9, 1.0),
+            roughness=0.8
+        )
+
+    def new_subsurface(self) -> Material:
+        return replace(Material(),
+            base_color=(1.0, 0.4, 0.4, 1.0),
+            subsurface_weight=1.0,
+            subsurface_radius=(1.0, 0.2, 0.1),
+            subsurface_scale=0.5,
+            emission_strength=0.3
+        )
+
+    def new_iridescent(self) -> Material:
+        return replace(Material(),
+            base_color=(0.8, 0.8, 0.8, 0.3),
+            metallic=0.8,
+            transmission_weight=0.5,
+            thin_film_thickness=1200,
+            thin_film_ior=1.5,
+            coat_weight=1.0
+        )
+
+    def new_waxy(self) -> Material:
+        return replace(Material(),
+            base_color=(0.9, 0.87, 0.82, 1.0),
+            subsurface_weight=0.3,
+            subsurface_radius=(0.5, 0.4, 0.3),
+            subsurface_scale=0.1,
+            roughness=0.4,
+            specular_ior_level=0.2,
+            metallic=0.0,
+            coat_weight=0.1,
+            coat_roughness=0.3,
+            sheen_weight=0.1,
+            sheen_roughness=0.3
+        )
+
+    def new_pearl(self) -> Material:
+        return replace(Material(),
+            base_color=(0.9, 0.9, 0.9, 1.0),
+            metallic=0.7,
+            roughness=0.15,
+            coat_weight=1.0,
+            coat_ior=2.0,
+            thin_film_thickness=500
+        )
+
+    def new_toon(self) -> Material:
+        return replace(Material(),
+            base_color=(0.2, 0.6, 1.0, 1.0),
+            metallic=0,
+            roughness=1.0,
+            specular_ior_level=0.0,
+            diffuse_roughness=1.0,
+            coat_weight=0.2
+        )
