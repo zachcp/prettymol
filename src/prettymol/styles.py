@@ -20,7 +20,7 @@ class StyleBase:
                 return getattr(self, f.name)
         return None
 
-    def update_style(self, **changes):
+    def update_properties(self, **changes):
         return replace(self, **changes)
 
 @dataclass(frozen=True)
