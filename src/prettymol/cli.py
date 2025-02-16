@@ -2,9 +2,9 @@ import click
 import bpy
 from .core import load_pdb, draw
 from .materials import Material
-from .styles import CartoonStyle, SpheresStyle
 from .repltools import Repltools
 from .selections import StructureSelector
+from .styles import CartoonStyle, SpheresStyle
 
 
 @click.command()

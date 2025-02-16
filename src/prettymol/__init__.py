@@ -1,5 +1,6 @@
-from .compositing import  GlareStreaks, GlareBloom, GlareGhosts, GlareFogGlow,  GlareSimpleStar
+# from .compositing import  GlareStreaks, GlareBloom, GlareGhosts, GlareFogGlow,  GlareSimpleStar
 from .core import draw, load_pdb
+from .lighting import LightingCreator
 from .materials import MaterialCreator
 from .repltools import Repltools
 from .selections import StructureSelector
