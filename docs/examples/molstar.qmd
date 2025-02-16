@@ -10,7 +10,7 @@ https://molstar.org/mol-view-spec/
 
 ## Example 01
 
-```{python}
+```python
 from prettymol import draw, load_pdb
 from prettymol import CartoonStyle, Material, Repltools
 
@@ -24,7 +24,7 @@ rt.render_view()
 ## Example 02
 
 
-```{python}
+```python
 # builder = create_builder()
 # structure = (builder
 #    .download(url="https://www.ebi.ac.uk/pdbe/entry-files/download/1lap_updated.cif")
