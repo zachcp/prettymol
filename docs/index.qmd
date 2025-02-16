@@ -21,7 +21,6 @@ title: "prettymol"
 
 ```sh
 git clone https://github.com/zachcp/prettymol &&  cd prettymol
-
 pixi run remove  # removes Blender's python
 pixi run jupyter # starts Blender AND IPYTHON
 ```
@@ -36,12 +35,7 @@ pixi run jupyter # starts Blender AND IPYTHON
 %autoreload 2
 
 
-from prettymol import draw, load_pdb    # basic fns
-from prettymol import StructureSelector # used for selection
-from prettymol import Repltools         # used for controlling Blender
-from prettymol import Material          # access Material Propoerties
-from prettymol import CartoonStyle,  SpheresStyle, SticksStyle  # MN Styles
-from dataclasses import replace, fields  # for overriding defaults
+from prettymol import draw, load_pdb StructureSelector, Repltools, MaterialCreator, StyleCreator, LightingCreator
 
 # setup the repl
 rt = Repltools()
@@ -52,26 +46,21 @@ polymer = StructureSelector(structure).amino_acids().get_selection()
 ligand = StructureSelector(structure).resname("MYN").get_selection()
 
 # Create materials
-surface_material =  Material()
-cartoon_material =  Material()
-sticks_material =  replace(
-        Material(),
+surface_material =  MaterialCreator.new()
+cartoon_material =  MaterialCreator.new()
+
+sticks_material =  MaterialCreator.new().update_properties(
         **{'base_color': [0.15, 1, 0.15, 1],
            "emission_strength": 1,                  # try changing this
            "emission_color": [0.15, 1, 0.15, 1]})   # try changing this
-
-sphere_style =  replace(
-        SpheresStyle(),
-        **{'as_mesh': True})
 
 
 # print(sticks_material)
 
 # Draw and position
-draw(structure, CartoonStyle(), cartoon_material)
-draw(ligand, sphere_style, sticks_material)
-# draw2(structure, styles.SurfaceStyle(), surface_material)
+draw(structure, StyleCreator.cartoon(), MaterialCreator.new())
+draw(ligand, StyleCreator.spheres(), sticks_material)
 
-rt.set_view_axis(distance=0.1)  # try changing this
-rt.render_view()
+rt.view_set_axis(distance=0.1)  # try changing this
+rt.view_render()
 ```
