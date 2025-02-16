@@ -2,14 +2,13 @@ import bpy
 import numpy as np
 from typing import Union, Any
 from biotite.structure.io import pdbx
-from biotite import structure as struct
 from biotite.structure import bonds
-from dataclasses import replace, fields
 from molecularnodes.entities.molecule.base import _create_object
 from molecularnodes.download import download
 from molecularnodes.blender import nodes as bl_nodes
 
-from .styles import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle, BSDFPrincipled, GlareStreaks, GlareBloom, GlareGhosts, GlareFogGlow, GlareSimpleStar
+from .materials import Material, MaterialCreator
+from .styles import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle
 
 
 
@@ -26,7 +25,7 @@ def load_pdb(code):
 
 StyleType = Union[BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle]
 
-def draw(arr: Any, style: StyleType, material: BSDFPrincipled) -> None:
+def draw(arr: Any, style: StyleType, material: Material) -> None:
 
     # Create object and material
     molname = f"mol_{id(arr)}"

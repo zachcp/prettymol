@@ -1,5 +1,5 @@
-import click
 import bpy
+import click
 from .core import load_pdb, draw
 from .lighting import LightingCreator
 from .materials import MaterialCreator
