@@ -1,5 +1,5 @@
 from dataclasses import dataclass, replace, field
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Literal, Union
 from .styles import StyleBase
 
 
@@ -50,12 +50,16 @@ class AreaLight(BaseLightProperties):
 
     Light emitted from a surface with a specified shape
     """
-    shape: Literal["SQUARE", "RECTANGLE", "DISK", "ELLIPSE"] = field(
-        default="SQUARE",
-        metadata={"key": "Shape"}
-    )
+    # shape: Literal["SQUARE", "RECTANGLE", "DISK", "ELLIPSE"] = field(
+    #     default="SQUARE",
+    #     metadata={"key": "Shape"}
+    # )
     size: float = field(default=0.25, metadata={"key": "Size"})
     size_y: float = field(default=0.25, metadata={"key": "Size Y"})
+
+
+
+BlenderLight = Union[PointLight, SunLight, SpotLight, AreaLight]
 
 class LightingCreator:
     def __init__(self):

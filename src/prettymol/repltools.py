@@ -9,122 +9,32 @@ from .lighting import LightingCreator, BlenderLight
 class Repltools():
     def __init__(self):
         self.setup_compositing()
-        self.clear()
-        self._orientation = None
+        self.scene_clear()
         self.set_view_axis()
 
-
-    def lighting_setup_three_point_lighting(self):
+    def lighting_set_light(self, light: BlenderLight):
         # Clear existing lights
         for obj in bpy.data.objects:
             if obj.type == 'LIGHT':
                 bpy.data.objects.remove(obj)
 
-        # Key Light (main light)
-        key_light = bpy.data.lights.new(name="Key_Light", type='AREA')
-        key_light.energy = 1000
-        key_light.size = 5
-        key_light_obj = bpy.data.objects.new(name="Key_Light", object_data=key_light)
-        bpy.context.scene.collection.objects.link(key_light_obj)
-        key_light_obj.location = (6, -4, 8)
-        key_light_obj.rotation_euler = (0.5, 0.2, -0.3)
-
-        # Fill Light
-        fill_light = bpy.data.lights.new(name="Fill_Light", type='AREA')
-        fill_light.energy = 500
-        fill_light.size = 5
-        fill_light_obj = bpy.data.objects.new(name="Fill_Light", object_data=fill_light)
-        bpy.context.scene.collection.objects.link(fill_light_obj)
-        fill_light_obj.location = (-6, 2, 3)
-        fill_light_obj.rotation_euler = (0.3, -0.2, 0.5)
-
-        # Back Light
-        back_light = bpy.data.lights.new(name="Back_Light", type='AREA')
-        back_light.energy = 750
-        back_light.size = 5
-        back_light_obj = bpy.data.objects.new(name="Back_Light", object_data=back_light)
-        bpy.context.scene.collection.objects.link(back_light_obj)
-        back_light_obj.location = (-2, -6, 5)
-        back_light_obj.rotation_euler = (0.7, -0.2, -2.0)
-
-    def lighting_setup_hdri_lighting(self):
-        # Set up world node tree
-        world = bpy.context.scene.world
-        world.use_nodes = True
-        nodes = world.node_tree.nodes
-        links = world.node_tree.links
-
-        # Clear existing nodes
-        nodes.clear()
-
-        # Add nodes
-        node_background = nodes.new('ShaderNodeBackground')
-        node_environment = nodes.new('ShaderNodeTexEnvironment')
-        node_mapping = nodes.new('ShaderNodeMapping')
-        node_tex_coord = nodes.new('ShaderNodeTexCoord')
-        node_output = nodes.new('ShaderNodeOutputWorld')
-
-        # Link nodes
-        links.new(node_tex_coord.outputs['Generated'], node_mapping.inputs['Vector'])
-        links.new(node_mapping.outputs['Vector'], node_environment.inputs['Vector'])
-        links.new(node_environment.outputs['Color'], node_background.inputs['Color'])
-        links.new(node_background.outputs['Background'], node_output.inputs['Surface'])
-
-        # Adjust world strength
-        node_background.inputs['Strength'].default_value = 1.0
-
-    def lighting_setup_rim_lighting(self):
-        # Create rim lights
-        for i in range(8):
-            angle = i * (360/8)
-            x = 6 * math.cos(math.radians(angle))
-            y = 6 * math.sin(math.radians(angle))
-
-            rim_light = bpy.data.lights.new(name=f"Rim_Light_{i}", type='AREA')
-            rim_light.energy = 200
-            rim_light.size = 2
-            rim_light_obj = bpy.data.objects.new(name=f"Rim_Light_{i}", object_data=rim_light)
-            bpy.context.scene.collection.objects.link(rim_light_obj)
-            rim_light_obj.location = (x, y, 3)
-            rim_light_obj.rotation_euler = (0.5, 0, math.radians(angle + 180))
-
-    def lighting_setup_volumetric_lighting(self):
-        # Set up volumetric lighting
-        bpy.context.scene.eevee.use_volumetric_lights = True
-        bpy.context.scene.eevee.volumetric_samples = 64
-
-        # Create a strong spot light
-        spot = bpy.data.lights.new(name="Volumetric_Spot", type='SPOT')
-        spot.energy = 5000
-        spot.spot_size = math.radians(30)
-        spot.spot_blend = 0.5
-        spot_obj = bpy.data.objects.new(name="Volumetric_Spot", object_data=spot)
-        bpy.context.scene.collection.objects.link(spot_obj)
-        spot_obj.location = (5, -5, 8)
-        spot_obj.rotation_euler = (0.9, 0.2, -0.6)
+        # Create new sun light
+        light_data = bpy.data.lights.new(name="SunLight", type='SUN')
+        light_object = bpy.data.objects.new(name="SunLight", object_data=light)
+        bpy.context.scene.collection.objects.link(light_object)
 
 
-    def lighting_setup_scientific_lighting(self):
-        # Main top light
-        top_light = bpy.data.lights.new(name="Top_Light", type='SUN')
-        top_light.energy = 5
-        top_light_obj = bpy.data.objects.new(name="Top_Light", object_data=top_light)
-        bpy.context.scene.collection.objects.link(top_light_obj)
-        top_light_obj.rotation_euler = (0, 0, 0)
+        # Update light properties from SunLight dataclass
+        light_data.color = light_properties.color
+        light_data.energy = light_properties.energy
+        light_data.diffuse_factor = light_properties.diffuse
+        light_data.specular_factor = light_properties.specular
+        light_data.volume_factor = light_properties.volume
+        light_data.angle = light_properties.angle
 
-        # Ambient light spheres
-        for i in range(6):
-            for j in range(3):
-                angle = i * (360/6)
-                z = 3 * (j - 1)
-                x = 8 * math.cos(math.radians(angle))
-                y = 8 * math.sin(math.radians(angle))
 
-                amb_light = bpy.data.lights.new(name=f"Ambient_{i}_{j}", type='POINT')
-                amb_light.energy = 100
-                amb_light_obj = bpy.data.objects.new(name=f"Ambient_{i}_{j}", object_data=amb_light)
-                bpy.context.scene.collection.objects.link(amb_light_obj)
-                amb_light_obj.location = (x, y, z)
+        return self
+
 
     def lighting_adjust_light_intensity(self, multiplier=1.0):
         """Adjust all light intensities by a multiplier"""
@@ -174,6 +84,34 @@ class Repltools():
         node_tree.links.new(render_layers.outputs['Image'], glare_node.inputs['Image'])
         node_tree.links.new(glare_node.outputs['Image'], composite.inputs['Image'])
         return self
+
+
+    # def view_auto(self):
+    #     area_type = 'VIEW_3D'
+    #     areas = [area for area in bpy.context.window.screen.areas if area.type == area_type]
+    #     if len(areas) <= 0:
+    #         raise Exception(f"Make sure an Area of type {area_type} is open or visible in your screen!")
+
+    #     # Select only MolecularNodes collection
+    #     for col in bpy.data.collections:
+    #         col.hide_viewport = True
+    #     if "MolecularNodes" in bpy.data.collections:
+    #         bpy.data.collections["MolecularNodes"].hide_viewport = False
+
+    #     with bpy.context.temp_override(
+    #         window=bpy.context.window,
+    #         area=areas[0],
+    #         region=[region for region in areas[0].regions if region.type == 'WINDOW'][0],
+    #         screen=bpy.context.window.screen
+    #     ):
+    #         bpy.ops.view3d.view_all()
+
+    #     # Restore visibility
+    #     for col in bpy.data.collections:
+    #         col.hide_viewport = False
+
+    #     self._view = self.get_view()
+    #     return self
 
 
     def view_auto(self):
@@ -257,34 +195,8 @@ class Repltools():
         pass
 
 
-    def view_auto(self):
-        area_type = 'VIEW_3D'
-        areas = [area for area in bpy.context.window.screen.areas if area.type == area_type]
-        if len(areas) <= 0:
-            raise Exception(f"Make sure an Area of type {area_type} is open or visible in your screen!")
 
-        # Select only MolecularNodes collection
-        for col in bpy.data.collections:
-            col.hide_viewport = True
-        if "MolecularNodes" in bpy.data.collections:
-            bpy.data.collections["MolecularNodes"].hide_viewport = False
-
-        with bpy.context.temp_override(
-            window=bpy.context.window,
-            area=areas[0],
-            region=[region for region in areas[0].regions if region.type == 'WINDOW'][0],
-            screen=bpy.context.window.screen
-        ):
-            bpy.ops.view3d.view_all()
-
-        # Restore visibility
-        for col in bpy.data.collections:
-            col.hide_viewport = False
-
-        self._view = self.get_view()
-        return self
-
-    def set_view_axis(self, axis="x", distance=5):
+    def view_set_axis(self, axis="x", distance=5):
         camera = bpy.context.scene.camera
         if camera is not None:
             match axis:
