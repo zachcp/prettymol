@@ -48,10 +48,10 @@ class MaterialCreator():
     def __init__(self):
         pass
 
-    def new(self) -> Material:
+    def new() -> Material:
         return Material()
 
-    def new_neon(self) -> Material:
+    def neon() -> Material:
         return replace(Material(),
             base_color=(0.0, 1.0, 0.8, 1.0),
             emission_strength=5.0,
@@ -59,7 +59,7 @@ class MaterialCreator():
             metallic=0.8,
             roughness=0.1)
 
-    def new_glass(self) -> Material:
+    def glass() -> Material:
         return replace(Material(),
             base_color=(0.8, 0.9, 1.0, 0.2),
             transmission_weight=0.95,
@@ -68,7 +68,7 @@ class MaterialCreator():
             specular_ior_level=0.6
         )
 
-    def new_metallic(self) -> Material:
+    def metallic() -> Material:
         return replace(Material(),
             base_color=(0.7, 0.7, 0.7, 1.0),
             metallic=1.0,
@@ -77,7 +77,7 @@ class MaterialCreator():
             coat_weight=1.0
         )
 
-    def new_holo(self) -> Material:
+    def holo() -> Material:
         return replace(Material(),
             base_color=(0.2, 0.6, 1.0, 0.3),
             emission_strength=2.0,
@@ -86,7 +86,7 @@ class MaterialCreator():
             thin_film_thickness=1000
         )
 
-    def new_gold(self) -> Material:
+    def gold() -> Material:
         return replace(Material(),
             base_color=(1.0, 0.8, 0.2, 1.0),
             metallic=1.0,
@@ -95,7 +95,7 @@ class MaterialCreator():
             anisotropic_rotation=0.5
         )
 
-    def new_velvet(self) -> Material:
+    def velvet() -> Material:
         return replace(Material(),
             base_color=(0.5, 0.0, 0.2, 1.0),
             sheen_weight=1.0,
@@ -104,7 +104,7 @@ class MaterialCreator():
             roughness=0.8
         )
 
-    def new_subsurface(self) -> Material:
+    def subsurface() -> Material:
         return replace(Material(),
             base_color=(1.0, 0.4, 0.4, 1.0),
             subsurface_weight=1.0,
@@ -113,7 +113,7 @@ class MaterialCreator():
             emission_strength=0.3
         )
 
-    def new_iridescent(self) -> Material:
+    def iridescent() -> Material:
         return replace(Material(),
             base_color=(0.8, 0.8, 0.8, 0.3),
             metallic=0.8,
@@ -123,7 +123,7 @@ class MaterialCreator():
             coat_weight=1.0
         )
 
-    def new_waxy(self) -> Material:
+    def waxy() -> Material:
         return replace(Material(),
             base_color=(0.9, 0.87, 0.82, 1.0),
             subsurface_weight=0.3,
@@ -138,7 +138,7 @@ class MaterialCreator():
             sheen_roughness=0.3
         )
 
-    def new_pearl(self) -> Material:
+    def pearl() -> Material:
         return replace(Material(),
             base_color=(0.9, 0.9, 0.9, 1.0),
             metallic=0.7,
@@ -148,7 +148,7 @@ class MaterialCreator():
             thin_film_thickness=500
         )
 
-    def new_toon(self) -> Material:
+    def toon() -> Material:
         return replace(Material(),
             base_color=(0.2, 0.6, 1.0, 1.0),
             metallic=0,

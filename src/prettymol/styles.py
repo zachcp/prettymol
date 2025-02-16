@@ -8,7 +8,8 @@ BSDF shader.
 
 
 from dataclasses import dataclass, replace, field, fields
-from typing import List, Tuple
+from typing import List, Tuple, Union
+
 
 
 @dataclass(frozen=True)
@@ -18,6 +19,9 @@ class StyleBase:
             if f.metadata.get('key') == original_key:
                 return getattr(self, f.name)
         return None
+
+    def update_style(self, **changes):
+        return replace(self, **changes)
 
 @dataclass(frozen=True)
 class BallStickStyle(StyleBase):
@@ -170,3 +174,30 @@ class GlareSimpleStar:
     threshold: float = 1.0
     fade: float = 0.8999999761581421
     use_rotate_45: bool = True
+
+
+
+StyleType = Union[BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle]
+
+
+class StyleCreator():
+    def new() -> StyleType:
+        return CartoonStyle()
+
+    def ball_stick() -> BallStickStyle:
+        return BallStickStyle()
+
+    def cartoon() -> CartoonStyle:
+        return CartoonStyle()
+
+    def ribbon() -> RibbonStyle:
+        return RibbonStyle()
+
+    def spheres() -> SpheresStyle:
+        return SpheresStyle()
+
+    def sticks() -> SticksStyle:
+        return SticksStyle()
+
+    def surface() -> SurfaceStyle:
+        return SurfaceStyle()
