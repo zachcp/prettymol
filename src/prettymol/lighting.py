@@ -84,7 +84,7 @@ class LightingCreator:
 
     def key_light() -> SpotLight:
         """Main light source, typically positioned above and to the side"""
-        return SpotLight().update_style(
+        return SpotLight().update_properties(
             energy=5.0,
             color=(1.0, 0.95, 0.9),
             shadow_soft_size=0.5,
@@ -94,7 +94,7 @@ class LightingCreator:
 
     def fill_light() -> AreaLight:
         """Softer light to fill shadows"""
-        return AreaLight().update_style(
+        return AreaLight().update_properties(
             energy=2.0,
             color=(0.9, 0.95, 1.0),
             size=2.0,
@@ -104,7 +104,7 @@ class LightingCreator:
 
     def rim_light() -> SpotLight:
         """Backlight for edge definition"""
-        return SpotLight().update_style(
+        return SpotLight().update_properties(
             energy=3.0,
             color=(1.0, 1.0, 1.0),
             spot_size=0.8,
@@ -114,7 +114,7 @@ class LightingCreator:
 
     def outdoor_sun(self) -> SunLight:
         """Simulates outdoor sunlight"""
-        return SunLight().update_style(
+        return SunLight().update_properties(
             energy=10.0,
             color=(1.0, 0.98, 0.95),
             angle=0.005
