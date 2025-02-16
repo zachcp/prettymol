@@ -81,33 +81,6 @@ class Repltools():
         return self
 
 
-    # def view_auto(self):
-    #     area_type = 'VIEW_3D'
-    #     areas = [area for area in bpy.context.window.screen.areas if area.type == area_type]
-    #     if len(areas) <= 0:
-    #         raise Exception(f"Make sure an Area of type {area_type} is open or visible in your screen!")
-
-    #     # Select only MolecularNodes collection
-    #     for col in bpy.data.collections:
-    #         col.hide_viewport = True
-    #     if "MolecularNodes" in bpy.data.collections:
-    #         bpy.data.collections["MolecularNodes"].hide_viewport = False
-
-    #     with bpy.context.temp_override(
-    #         window=bpy.context.window,
-    #         area=areas[0],
-    #         region=[region for region in areas[0].regions if region.type == 'WINDOW'][0],
-    #         screen=bpy.context.window.screen
-    #     ):
-    #         bpy.ops.view3d.view_all()
-
-    #     # Restore visibility
-    #     for col in bpy.data.collections:
-    #         col.hide_viewport = False
-
-    #     self._view = self.get_view()
-    #     return self
-
 
     def view_auto(self):
         area_type = 'VIEW_3D'
@@ -133,7 +106,7 @@ class Repltools():
         for col in bpy.data.collections:
             col.hide_viewport = False
 
-        self._view = self.get_view()
+        self._view = self.view_get()
         return self
 
 
@@ -156,7 +129,6 @@ class Repltools():
 
 
     def view_render(self):
-        print("in the repl render_view")
         try:
             from IPython.display import Image, display
             use_ipython = True
@@ -249,19 +221,5 @@ class Repltools():
         rads = math.radians(degrees)
         space_data.region_3d.view_rotation.rotate(mathutils.Euler((0.0, 0.0, rads)))
 
-        self._view = self.get_view()
+        self._view = self.view_get()
         return self
-
-
-
-    # def lighting_set_light_color(color=(1, 1, 1, 1)):
-    #     """Set color for all lights"""
-    #     for obj in bpy.data.objects:
-    #         if obj.type == 'LIGHT':
-    #             obj.data.color = color[:3]
-    #
-    # def setup_ambient_occlusion():
-        # """Setup ambient occlusion for better detail"""
-        # bpy.context.scene.eevee.use_gtao = True
-        # bpy.context.scene.eevee.gtao_distance = 0.2
-        # bpy.context.scene.eevee.gtao_factor = 1.0
