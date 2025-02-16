@@ -19,6 +19,7 @@ class PointLight(BaseLightProperties):
 
     Omnidirectional light source that emits light equally in all directions
     """
+    type="POINT"
     shadow_soft_size: float = field(default=0.25, metadata={"key": "Shadow Soft Size"})
     use_custom_distance: bool = field(default=False, metadata={"key": "Use Custom Distance"})
     custom_distance: float = field(default=40.0, metadata={"key": "Custom Distance"})
@@ -29,6 +30,7 @@ class SunLight(BaseLightProperties):
 
     Parallel rays from a distant source, with infinite range
     """
+    type="SUN"
     angle: float = field(default=0.009, metadata={"key": "Angle"})  # Default is ~0.526 degrees
 
 @dataclass(frozen=True)
@@ -37,6 +39,7 @@ class SpotLight(BaseLightProperties):
 
     Cone-shaped light source
     """
+    type="SPOT"
     shadow_soft_size: float = field(default=0.25, metadata={"key": "Shadow Soft Size"})
     spot_size: float = field(default=0.785398, metadata={"key": "Spot Size"})  # 45 degrees in radians
     spot_blend: float = field(default=0.15, metadata={"key": "Spot Blend"})
@@ -50,10 +53,12 @@ class AreaLight(BaseLightProperties):
 
     Light emitted from a surface with a specified shape
     """
+    type="AREA"
     # shape: Literal["SQUARE", "RECTANGLE", "DISK", "ELLIPSE"] = field(
     #     default="SQUARE",
     #     metadata={"key": "Shape"}
     # )
+    #
     size: float = field(default=0.25, metadata={"key": "Size"})
     size_y: float = field(default=0.25, metadata={"key": "Size Y"})
 

@@ -10,28 +10,23 @@ class Repltools():
     def __init__(self):
         self.setup_compositing()
         self.scene_clear()
-        self.set_view_axis()
+        self.view_set_axis()
+
 
     def lighting_set_light(self, light: BlenderLight):
         # Clear existing lights
         for obj in bpy.data.objects:
             if obj.type == 'LIGHT':
-                bpy.data.objects.remove(obj)
+                bpy.data.objects.remove(obj, do_unlink=True)
 
-        # Create new sun light
-        light_data = bpy.data.lights.new(name="SunLight", type='SUN')
-        light_object = bpy.data.objects.new(name="SunLight", object_data=light)
-        bpy.context.scene.collection.objects.link(light_object)
+        light_data = bpy.data.lights.new(name="Light", type = light.type)
+        for property_name, value in vars(light).items():
+            if hasattr(light_data, property_name):
+                 setattr(light_data, property_name, value)
 
-
-        # Update light properties from SunLight dataclass
-        light_data.color = light_properties.color
-        light_data.energy = light_properties.energy
-        light_data.diffuse_factor = light_properties.diffuse
-        light_data.specular_factor = light_properties.specular
-        light_data.volume_factor = light_properties.volume
-        light_data.angle = light_properties.angle
-
+        light_object = bpy.data.objects.new(name="Light", object_data=light_data)
+        default_collection = bpy.data.collections['Collection']
+        default_collection.objects.link(light_object)
 
         return self
 
