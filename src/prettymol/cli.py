@@ -1,10 +1,11 @@
 import click
 import bpy
 from .core import load_pdb, draw
-from .materials import Material
+from .lighting import LightingCreator
+from .materials import MaterialCreator
 from .repltools import Repltools
 from .selections import StructureSelector
-from .styles import CartoonStyle, SpheresStyle
+from .styles import StyleCreator
 
 
 @click.command()
@@ -14,7 +15,7 @@ def cli(code, output):
     """Generate molecular structure image from code"""
 
     rt = Repltools()
-    rt.set_view_axis(distance=2)
+    rt.view_set_axis(distance=2)
 
     # load structure
     structure = load_pdb(code)
@@ -24,8 +25,8 @@ def cli(code, output):
     ligand = StructureSelector(structure).resname("RAP").get_selection()
 
     # draw the molecu
-    draw(polymer, CartoonStyle(), Material())
-    draw(ligand, SpheresStyle(), Material())
+    draw(polymer, StyleCreator.cartoon(), MaterialCreator.new())
+    draw(ligand, StyleCreator.spheres(),  MaterialCreator.new())
 
     # render the scene
     bpy.context.scene.render.filepath = output
