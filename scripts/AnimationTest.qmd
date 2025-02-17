@@ -1,0 +1,166 @@
+---
+jupyter: blender
+---
+
+```{python}
+%load_ext autoreload
+%autoreload 2
+
+
+import os
+import time
+from math import radians
+import blendersynth as bsyn
+
+from prettymol import draw, load_pdb
+from prettymol import StructureSelector, Repltools, MaterialCreator, StyleCreator, LightingCreator
+from biotite.structure import rotate_about_axis
+
+
+# Load and process structure
+structure = load_pdb("7xbu")
+polymer = StructureSelector(structure).amino_acids().get_selection()
+ligand = StructureSelector(structure).resname("MYN").get_selection()
+
+
+base_ribbon = StyleCreator.ribbon().update_properties(
+    radius=2.5,
+    smoothing=0.8,
+    quality=4
+)
+
+
+sun = LightingCreator.sun_light().update_properties(energy=10)
+
+rt = Repltools()
+rt.lighting_set_light(sun)
+rt.view_set_axis(distance=1.0)
+
+bsyn.render.set_cycles_samples(10)
+bsyn.render.set_resolution(256, 256)
+bsyn.render.set_transparent()
+
+
+materials = {
+    "subsurface": MaterialCreator.subsurface(),
+    "toon": MaterialCreator.toon(),
+    "velvet": MaterialCreator.velvet(),
+    "waxy": MaterialCreator.waxy()
+}
+
+for material_name in materials.keys():
+    os.makedirs(f"pngs/{material_name}", exist_ok=True)
+```
+
+```{python}
+ rt.view_rotate(18)
+```
+
+```{python}
+# mesh1.rotate_by([0,0,1])
+```
+
+```{python}
+#| scrolled: true
+import time
+from math import radians
+
+rt = Repltools()
+rt.scene_clear()
+rt.view_set_axis(distance=1.3)
+
+for matname, material in materials.items():
+    for i in range(0, 360, 1):
+        rt.scene_clear()
+        structure = load_pdb("7xbu")
+        #structure = rotate_about_axis(structure, [0,0,1], i)
+        obj = draw(structure, StyleCreator.ribbon(), material)
+        mat_01 = obj.data.materials
+        class_id = 0
+        mesh1 = bsyn.Mesh(obj, class_id = 0)
+        mesh1.rotate_by([0,0, radians(i)])
+        #time.sleep(1)
+        rt.view_save(filename = f"pngs/{matname}/{matname}_{i:03d}", width=400, height=400)
+
+```
+
+```{python}
+import subprocess
+import os
+import glob
+
+delay = 0
+for matname in materials.keys():
+        outfile = f"pngs/{matname}.gif"
+        command = [
+            'magick',
+            '-delay', str(delay),
+            '-loop', '0',
+            '-dispose', 'previous',
+            # '-coalesce',
+            f"pngs/{matname}/*.png",
+            outfile
+        ]
+        subprocess.run(command, check=True)
+        print(f"GIF created successfully: {outfile}")
+```
+
+```{python}
+def create_gif(input_dir, output_file, delay=2, frame_step=6):  # frame_step=6 means use every 6th frame
+    """
+    Create a faster GIF by using fewer frames
+    """
+    try:
+
+        png_files = sorted(glob.glob(f"{input_dir}/*.png"))
+        # print(input_dir, png_files)
+        # Take every nth frame
+        png_files = png_files[::frame_step]
+
+        if not png_files:
+            print("No PNG files found in directory")
+            return
+
+        command = [
+            'magick',
+            '-delay', str(delay),
+            '-loop', '0',
+            '-dispose', 'background',
+        ]
+        command.extend(png_files)
+        command.append(output_file)
+
+        subprocess.run(command, check=True)
+        print(f"GIF created successfully: {output_file}")
+        print(f"Processed {len(png_files)} files")
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error creating GIF: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+
+for matname in materials.keys():
+    input_directory = f"pngs/{matname}"
+    outfile = f"pngs/{matname}.gif"
+    create_gif(input_directory, outfile, delay=1, frame_step=3)
+```
+
+```{python}
+!magick montage -tile 2x2 -geometry +0+0 -background none -dispose background  -coalesce -adjoin pngs/*.gif combined.gif
+```
+
+```{python}
+! ffmpeg \
+  -i pngs/subsurface.gif -i pngs/toon.gif -i pngs/velvet.gif -i pngs/waxy.gif \
+  -filter_complex "\
+    [0:v][1:v]hstack[top]; \
+    [2:v][3:v]hstack[bottom]; \
+    [top][bottom]vstack[video]; \
+    [video]split[video1][video2]; \
+    [video1]palettegen=stats_mode=full[palette]; \
+    [video2][palette]paletteuse=dither=sierra2_4a" \
+  -framerate 30 \
+  output.gif
+```
