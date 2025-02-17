@@ -1,0 +1,63 @@
+---
+title: "API"
+---
+
+
+prettmol  aims to have a small API that you can learn from a few examples.
+
+
+```python
+# IO: currently only via the PDB
+from prettymol load_pdb
+
+# Convert: Biotite::AtomArray -> Blender Mesh OBJ via Blendernodes.
+# draw takes  an AtomArray, a style, and Material and returns a Mesh
+from prettymol import draw
+draw(structure, StyleCreator.cartoon(), MaterialCreator.new())
+
+# select pieces of the AtomArray before you render them
+from prettymol import StructureSelector
+polymer = StructureSelector(structure).amino_acids().get_selection()
+
+# setup and manipulate Blender from IPython
+from prettymol import Repltools
+rt = Repltool()
+
+# materials, styles, and lightings all work similarly.
+# the creator classes can make predefined componentes,
+# all of which can be customized
+from prettymol import MaterialCreator, StyleCreator, LightingCreator
+MaterialCreator.new()
+MaterialCreator.pearl()
+StyleCreator.new()
+StyleCreator.cartoon()
+LightingCreator.new()
+LightingCreator.sun()
+```
+
+
+# Use Tab Completion
+
+With just a few classes you should be able to explore most of the API via tab-discovery
+
+
+::: {layout="[[1,1], [1,1]]"}
+![](images/repl/repltools.png)
+
+![](images/repl/lighting.png)
+
+![](images/repl/materials.png)
+
+![](images/repl/styles.png)
+
+:::
+
+
+# Customization is Just Data
+
+Take a look at the docs or code for Materials, Stlyes, or Lighting. It is just data that will
+be set to native Blender objects.
+
+Goal: selection + material + style --> render.
+
+If you want more selections add them. If you want different styles, overlay or subset them to your heart's content

@@ -8,6 +8,7 @@ title: "prettymol"
 <a href="https://github.com/BradyJohnston/MolecularNodes"> <img src="https://img.shields.io/badge/powered%20by-MolecularNodes-orange.svg" alt="Badge showing usage of molecularnodes as a python package powering the add-on" style="height:20px"/></a>
 
 
+![](images/animations/rotate_01.gif)
 
 ## Quick start
 

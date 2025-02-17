@@ -11,8 +11,6 @@ from .materials import Material, MaterialCreator
 from .styles import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle
 
 
-
-
 # Connect bonds and center the structure
 def load_pdb(code):
     cif_file = download(code)
@@ -66,4 +64,4 @@ def draw(arr: Any, style: StyleType, material: Material) -> None:
         if material_input:
             material_input.default_value = mat
 
-    return None
+    return obj

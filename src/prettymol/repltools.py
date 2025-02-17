@@ -146,6 +146,34 @@ class Repltools():
             print("Image saved to /tmp/output.png")
             return '/tmp/output.png'
 
+    def view_rotate(self, degrees):
+        area_type = 'VIEW_3D'
+        areas = [area for area in bpy.context.window.screen.areas if area.type == area_type]
+        if len(areas) <= 0:
+            raise Exception(f"Make sure an Area of type {area_type} is open or visible in your screen!")
+        space_data = areas[0].spaces.active
+        rads = math.radians(degrees)
+        space_data.region_3d.view_rotation.rotate(mathutils.Euler((0.0, 0.0, rads)))
+        # self._view = self.view_get()
+        return self
+
+
+    def view_save(self, filename, width=1920, height=1080):
+        scene = bpy.context.scene
+        # Resolution
+        scene.render.resolution_x = width  # Width
+        scene.render.resolution_y = height  # Height
+        scene.render.resolution_percentage = 100  # Scale
+
+        # Output settings
+        scene.render.image_settings.file_format = 'PNG'  # Format (PNG, JPEG, BMP, etc)
+        scene.render.image_settings.color_mode = 'RGBA'  # Color mode (RGB, RGBA)
+        scene.render.image_settings.compression = 15  # PNG compression
+
+        bpy.context.scene.render.filepath = filename
+        bpy.ops.render.render(use_viewport=True, write_still=True)
+        return self
+
     def view_set(self, view_matrix):
         mmat = mathutils.Matrix(list(view_matrix))
         camera = bpy.context.scene.camera
@@ -187,39 +215,4 @@ class Repltools():
                 if area.type == 'VIEW_3D':
                     area.spaces[0].region_3d.view_perspective = 'CAMERA'
 
-        return self
-
-    def rotate_view(self, degrees):
-        area_type = 'VIEW_3D'
-        areas = [area for area in bpy.context.window.screen.areas if area.type == area_type]
-        if len(areas) <= 0:
-            raise Exception(f"Make sure an Area of type {area_type} is open or visible in your screen!")
-
-        with bpy.context.temp_override(
-            window=bpy.context.window,
-            area=areas[0],
-            region=[region for region in areas[0].regions if region.type == 'WINDOW'][0],
-            screen=bpy.context.window.screen
-        ):
-            import math
-            rads = math.radians(degrees)
-            bpy.ops.view3d.rotate(angle=rads, type="ORBIT")
-
-        self._view = self.get_view()
-        return self
-
-
-    def rotate_view2(self, degrees):
-        import math
-        area_type = 'VIEW_3D'
-        areas = [area for area in bpy.context.window.screen.areas if area.type == area_type]
-        if len(areas) <= 0:
-            raise Exception(f"Make sure an Area of type {area_type} is open or visible in your screen!")
-
-        space_data = areas[0].spaces.active
-
-        rads = math.radians(degrees)
-        space_data.region_3d.view_rotation.rotate(mathutils.Euler((0.0, 0.0, rads)))
-
-        self._view = self.view_get()
         return self
