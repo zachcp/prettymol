@@ -7,12 +7,16 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: materials.html
-        text: Materials
-      - href: selections.html
-        text: Selections
-      - href: styles.html
-        text: Styles
+      - href: api.html
+        text: API
+      - text: Code Documentation
+        menu:
+          - href: materials.html
+            text: Materials
+          - href: selections.html
+            text: Selections
+          - href: styles.html
+            text: Styles
 
     right:
       - icon: github
