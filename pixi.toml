@@ -11,9 +11,9 @@ preview = ["pixi-build"]
 [dependencies]
 python = "==3.11"
 prettymol = { path = "." }
-# ffmpeg-python = "*"
-# ffmpeg = "*"
-# opencv = "*"
+ffmpeg-python = "*"
+ffmpeg = "*"
+opencv = "*"
 numpy = "<2"
 # pip = "*
 # ipython = "*"
@@ -29,6 +29,7 @@ blender_notebook = "*"
 bpy = "*"
 databpy = "*"
 molecularnodes = "*"
+blendersynth = ">=0.3.0, <0.4"
 
 
 [package]
