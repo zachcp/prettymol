@@ -10,14 +10,15 @@ preview = ["pixi-build"]
 
 [dependencies]
 python = "==3.11"
+python_abi = "3.11.*"
 prettymol = { path = "." }
 ffmpeg-python = "*"
 ffmpeg = "*"
+# ipython = "*"
+jupyter = ">=1.1.1,<2"
 opencv = "*"
 numpy = "<2"
 # pip = "*
-# ipython = "*"
-jupyter = ">=1.1.1,<2"
 pytest = "*"
 quarto = ">=1.6.40,<2"
 rdkit = "*"
