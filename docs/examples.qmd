@@ -1,0 +1,49 @@
+---
+title: "Examples"
+---
+
+# Materials
+
+
+::: {layout="[[1,1,1,1], [1,1,1,1] , [1,1,1,1]]"}
+
+![neon](./images/materials/loop_01.png)
+
+![--](./images/materials/loop_02.png)
+
+![--](./images/materials/loop_03.png)
+
+![--](./images/materials/loop_04.png)
+
+![--](./images/materials/loop_05.png)
+
+![Pearl](./images/materials/loop_06.png)
+
+![Surface](./images/materials/loop_07.png)
+
+![Holo](./images/materials/loop_08.png)
+
+![Velvet](images/materials/surface_01.png)
+
+![GFP Gold](images/materials/gfp_gold_interior.png)
+
+![GFP Green Glow](images/materials/gfp_greenglow_interior.png)
+
+![GFP Test](images/materials/gfptest_468.png)
+
+![Green Glow](images/materials/green_glow.png)
+
+:::
+
+
+
+# Animations
+
+## GFP Growing and Glowing
+
+![GFP Growth Animation](images/animations/gfp_grow.gif)
+
+
+## Ribbon with 4 Materials
+
+![Rotation Animation 1](images/animations/rotate_01.gif)
