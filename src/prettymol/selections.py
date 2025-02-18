@@ -1,3 +1,4 @@
+import numpy as np
 from biotite.structure import filter
 
 
@@ -84,6 +85,9 @@ class StructureSelector:
     def resid(self, num):
         return self._update_mask(select_resid(self.structure, num))
 
+    def resids(self, nums):
+        return self._update_mask(select_resids(self.structure, nums))
+
     def resname(self, res_name):
         return self._update_mask(select_resname(self.structure, res_name))
 
@@ -148,6 +152,9 @@ def select_polymer(arr):
 
 def select_resid(arr, num):
     return num == arr.get_annotation("res_id")
+
+def select_resids(arr, nums):
+    return np.isin(arr.get_annotation("res_id"), nums)
 
 def select_resname(arr, res_name):
     return res_name == arr.get_annotation("res_name")

@@ -67,6 +67,15 @@ class MaterialCreator():
             anisotropic_rotation=0.5
         )
 
+    def green_glow() -> Material:
+        return replace(Material(),
+            base_color=(0.0, 1.0, 0.0, 1.0),
+            emission_strength=5.0,
+            emission_color=(0.0, 1.0, 0.0, 1.0),
+            metallic=0.0,
+            roughness=0.2
+            )
+
     def holo() -> Material:
         return replace(Material(),
             base_color=(0.2, 0.6, 1.0, 0.3),
