@@ -7,10 +7,12 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: api.html
-        text: API
+      - href: examples.qmd
+        text: Examples
       - text: Code Documentation
         menu:
+          - href: api.html
+            text: API
           - href: materials.html
             text: Materials
           - href: selections.html

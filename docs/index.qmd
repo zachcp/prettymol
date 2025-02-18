@@ -29,7 +29,7 @@ pixi run jupyter # starts Blender AND IPYTHON
 
 ### Complete Minimal Example
 
-![](images/green_glow.png)
+![](images/materials/green_glow.png)
 
 ```python
 %load_ext autoreload
