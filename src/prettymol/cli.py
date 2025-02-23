@@ -54,9 +54,10 @@ def render(code, output):
 @click.option('--output', required=True, help='Output directory path')
 @click.option('--width', default=400, help='Width of output images')
 @click.option('--height', default=400, help='Height of output images')
+@click.option('--camera-distance', default=2.0, help='Camaeras Distance from the origin')
 @click.option('--rotation-steps', default=360, help='Number of rotation steps')
 @click.option('--selection', default=None, help='Optional selection criteria')
-def grow(code, output, width, height, rotation_steps, selection):
+def grow(code, output, width, height, camera_distance, rotation_steps, selection):
     """Generate growth animation from molecular structure"""
 
     # Create output directory if it doesn't exist
@@ -66,7 +67,7 @@ def grow(code, output, width, height, rotation_steps, selection):
     bpy.context.scene.render.film_transparent = True
 
     rt = Repltools()
-    rt.view_set_axis(distance=2.0)
+    rt.view_set_axis(distance=camera_distance)
 
     # Load and orient structure
     structure = load_pdb(code)
@@ -89,7 +90,7 @@ def grow(code, output, width, height, rotation_steps, selection):
             obj_structure.rotation_euler.z = radians(i)
 
             # Save the frame
-            rt.view_set_axis(distance=1)
+            rt.view_set_axis(distance=camera_distance)
             rt.view_save(
                 filename=f"{output}/frame_{i:03d}",
                 width=width,
