@@ -12,5 +12,14 @@ Make molecules. pretty.
 ## CLI
 
 ```sh
-prettymol --code 1FAP --output prettymol.png
+prettymol render --code 1FAP --output prettymol.png
+prettymol grow --code 1FAP --output prettymol.png
+```
+
+## Blender Repl
+
+```sh
+# requires a blender install and a pixi install
+# pixi run remove # --> if blender's pytho is deleted, you can use pixi's venv to drive
+pixi run jupyter
 ```

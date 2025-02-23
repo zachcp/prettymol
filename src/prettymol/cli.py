@@ -4,6 +4,8 @@ from math import radians
 
 import bpy
 import click
+from PIL import Image
+from pathlib import Path
 
 from .core import load_pdb, draw
 from .lighting import LightingCreator
@@ -60,11 +62,11 @@ def grow(code, output, width, height, rotation_steps, selection):
     # Create output directory if it doesn't exist
     os.makedirs(output, exist_ok=True)
     # Set up transparent background
-    bpy.context.scene.render.image_settings.color_mode = 'RGBA'  # Enable alpha channel
-    bpy.context.scene.render.film_transparent = True  # Set transparent background
+    bpy.context.scene.render.image_settings.color_mode = 'RGBA'
+    bpy.context.scene.render.film_transparent = True
 
     rt = Repltools()
-    rt.view_set_axis(distance=1.0)
+    rt.view_set_axis(distance=2.0)
 
     # Load and orient structure
     structure = load_pdb(code)
@@ -143,6 +145,27 @@ def grow(code, output, width, height, rotation_steps, selection):
             )
 
     click.echo(f"Animation frames saved to {output}")
+
+
+    # Get list of PNG files
+    frames = []
+    png_files = Path(f"{output}").glob("*.png")
+    png_files = sorted(list(png_files))
+
+    # Open each PNG and append to frames
+    for filename in png_files:
+        frame = Image.open(filename)
+        frames.append(frame)
+
+    frames[0].save(
+        f'{output}.gif',
+        save_all=True,
+        append_images=frames[1:],
+        optimize=False,
+        duration=50,  # Duration for each frame in milliseconds
+        disposal=2,
+        loop=0  # 0 means loop forever
+    )
     return "Done"
 
 
