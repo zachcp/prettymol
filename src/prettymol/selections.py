@@ -2,7 +2,6 @@ import numpy as np
 from biotite.structure import filter
 
 
-
 class StructureSelector:
     """
     example = StructureSelector(structure)
@@ -64,6 +63,9 @@ class StructureSelector:
     def intersection(self):
         return self._update_mask(select_intersection(self.structure))
 
+    def ligand(self):
+        return self._update_mask(select_ligand(self.structure))
+
     def linear_bond_continuity(self):
         return self._update_mask(select_linear_bond_continuity(self.structure))
 
@@ -93,6 +95,60 @@ class StructureSelector:
 
     def solvent(self):
         return self._update_mask(select_solvent(self.structure))
+
+    def not_amino_acids(self):
+            return self._update_mask(~select_amino_acids(self.structure))
+
+    def not_atomname(self, atomname):
+        return self._update_mask(~select_atomname(self.structure, atomname))
+
+    def not_canonical_amino_acids(self):
+        return self._update_mask(~select_canonical_amino_acids(self.structure))
+
+    def not_canonical_nucleotides(self):
+        return self._update_mask(~select_canonical_nucleotides(self.structure))
+
+    def not_carbohydrates(self):
+        return self._update_mask(~select_carbohydrates(self.structure))
+
+    def not_chain(self, chain_id):
+        return self._update_mask(~select_chain(self.structure, chain_id))
+
+    def not_element(self, element):
+        return self._update_mask(~select_element(self.structure, element))
+
+    def not_hetero(self):
+        return self._update_mask(~select_hetero(self.structure))
+
+    def not_inscode(self, inscode):
+        return self._update_mask(~select_inscode(self.structure, inscode))
+
+    def not_monoatomic_ions(self):
+        return self._update_mask(~select_monoatomic_ions(self.structure))
+
+    def not_nucleotides(self):
+        return self._update_mask(~select_nucleotides(self.structure))
+
+    def not_peptide_backbone(self):
+        return self._update_mask(~select_peptide_backbone(self.structure))
+
+    def not_phosphate_backbone(self):
+        return self._update_mask(~select_phosphate_backbone(self.structure))
+
+    def not_polymer(self):
+        return self._update_mask(~select_polymer(self.structure))
+
+    def not_resid(self, num):
+        return self._update_mask(~select_resid(self.structure, num))
+
+    def not_resids(self, nums):
+        return self._update_mask(~select_resids(self.structure, nums))
+
+    def not_resname(self, res_name):
+        return self._update_mask(~select_resname(self.structure, res_name))
+
+    def not_solvent(self):
+        return self._update_mask(~select_solvent(self.structure))
 
 
 
@@ -131,6 +187,14 @@ def select_inscode(arr, inscode):
 
 def select_intersection(arr):
     return filter.filter_intersection(arr)
+
+def select_ligand(arr):
+    """Selects ligand molecules (hetero compounds that are not solvent or ions)"""
+    hetero_mask = select_hetero(arr)
+    not_solvent_mask = ~select_solvent(arr)
+    not_ion_mask = ~select_monoatomic_ions(arr)
+    return hetero_mask & not_solvent_mask & not_ion_mask
+
 
 def select_linear_bond_continuity(arr):
     return filter.filter_linear_bond_continuity(arr)
