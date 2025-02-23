@@ -146,6 +146,7 @@ def grow(code, output, width, height, rotation_steps, selection):
 
     click.echo(f"Animation frames saved to {output}")
 
+    click.echo(f"Creating GIF from PNGs.....")
 
     # Get list of PNG files
     frames = []
@@ -166,6 +167,8 @@ def grow(code, output, width, height, rotation_steps, selection):
         disposal=2,
         loop=0  # 0 means loop forever
     )
+
+    click.echo(f"GIF Creation Complete!")
     return "Done"
 
 
