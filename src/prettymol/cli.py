@@ -36,7 +36,7 @@ def render(code, output):
     polymer = StructureSelector(structure).amino_acids().get_selection()
     ligand = StructureSelector(structure).ligand().get_selection()
 
-    # draw the molecu
+    # draw the molecule
     draw(polymer, StyleCreator.cartoon(), MaterialCreator.new())
     draw(ligand, StyleCreator.spheres(),  MaterialCreator.new())
 
@@ -50,8 +50,8 @@ def render(code, output):
 @cli.command()
 @click.option('--code', required=True, help='PDB code of the molecule')
 @click.option('--output', required=True, help='Output directory path')
-@click.option('--width', default=800, help='Width of output images')
-@click.option('--height', default=800, help='Height of output images')
+@click.option('--width', default=400, help='Width of output images')
+@click.option('--height', default=400, help='Height of output images')
 @click.option('--rotation-steps', default=360, help='Number of rotation steps')
 @click.option('--selection', default=None, help='Optional selection criteria')
 def grow(code, output, width, height, rotation_steps, selection):
@@ -59,6 +59,9 @@ def grow(code, output, width, height, rotation_steps, selection):
 
     # Create output directory if it doesn't exist
     os.makedirs(output, exist_ok=True)
+    # Set up transparent background
+    bpy.context.scene.render.image_settings.color_mode = 'RGBA'  # Enable alpha channel
+    bpy.context.scene.render.film_transparent = True  # Set transparent background
 
     rt = Repltools()
     rt.view_set_axis(distance=1.0)
@@ -116,17 +119,17 @@ def grow(code, output, width, height, rotation_steps, selection):
             # Add chromophore if present
             try:
 
-                chromo = StructureSelector(structure).resname("CRO").get_selection()
+                ligand = StructureSelector(structure).ligand().get_selection()
                 intensity = 5 + round(3 * math.sin(i), 2)
                 obj_chromo = draw(
-                    chromo,
+                    ligand,
                     StyleCreator.spheres(),
                     MaterialCreator.green_glow().update_properties(emission_strength=intensity)
                 )
                 # Rotate chromophore
                 obj_chromo.rotation_euler.z = radians(frame)
             except:
-                click.echo("No chromophore (CRO) found in structure")
+                click.echo("No ligand found in structure")
 
             # Rotate all components
             obj_structure.rotation_euler.z = radians(frame)
