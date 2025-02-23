@@ -2,7 +2,7 @@ import os
 from prettymol.cli import cli, render
 from click.testing import CliRunner
 
-def test_hello_command():
+def test_render_command():
     runner = CliRunner()
     with runner.isolated_filesystem():
         result = runner.invoke(render, ['--code', '1fap', '--output', 'test.png'])

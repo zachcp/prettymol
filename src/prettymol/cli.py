@@ -1,5 +1,10 @@
+import os
+import math
+from math import radians
+
 import bpy
 import click
+
 from .core import load_pdb, draw
 from .lighting import LightingCreator
 from .materials import MaterialCreator
@@ -15,7 +20,7 @@ def cli():
     pass
 
 
-@click.command()
+@cli.command()
 @click.option('--code', required=True, help='PDB code of the molecule')
 @click.option('--output', required=True, help='Output file path for the rendered image')
 def render(code, output):
@@ -29,7 +34,7 @@ def render(code, output):
 
     # setup the scene
     polymer = StructureSelector(structure).amino_acids().get_selection()
-    ligand = StructureSelector(structure).resname("RAP").get_selection()
+    ligand = StructureSelector(structure).ligand().get_selection()
 
     # draw the molecu
     draw(polymer, StyleCreator.cartoon(), MaterialCreator.new())
@@ -39,6 +44,8 @@ def render(code, output):
     bpy.context.scene.render.filepath = output
     bpy.ops.render.render(use_viewport=True, write_still=True)
     return "Done"
+
+
 
 @cli.command()
 @click.option('--code', required=True, help='PDB code of the molecule')
@@ -58,31 +65,23 @@ def grow(code, output, width, height, rotation_steps, selection):
 
     # Load and orient structure
     structure = load_pdb(code)
-    structure = orient_principal_components(structure, order=(1, 2, 0))
-
-    # Get residue IDs for progressive building
     polymer = StructureSelector(structure).amino_acids().get_selection()
     resids = list(set(polymer.get_annotation('res_id').tolist()))
 
     # Phase 1: Grow the backbone
     for i in range(len(resids)):
-        if i % 2 == 0:  # Only process every other frame to reduce total frames
+        if i % 2 == 0:
             rt.scene_clear()
-
-            # Select progressively more residues
             sel = StructureSelector(structure)
             sel2 = sel.resids(resids[:i]).get_selection()
-
-            # Draw the current selection
             obj_structure = draw(
                 sel2,
                 StyleCreator.ribbon().update_properties(radius=1, quality=2, shade_smooth=False),
                 MaterialCreator.new()
             )
 
-            # Rotate the structure
-            mesh1 = bsyn.Mesh(obj_structure, class_id=0)
-            mesh1.rotate_by([0, 0, radians(i)])
+            # Rotate using Blender's rotation
+            obj_structure.rotation_euler.z = radians(i)
 
             # Save the frame
             rt.view_set_axis(distance=1)
@@ -116,6 +115,7 @@ def grow(code, output, width, height, rotation_steps, selection):
 
             # Add chromophore if present
             try:
+
                 chromo = StructureSelector(structure).resname("CRO").get_selection()
                 intensity = 5 + round(3 * math.sin(i), 2)
                 obj_chromo = draw(
@@ -123,13 +123,14 @@ def grow(code, output, width, height, rotation_steps, selection):
                     StyleCreator.spheres(),
                     MaterialCreator.green_glow().update_properties(emission_strength=intensity)
                 )
+                # Rotate chromophore
+                obj_chromo.rotation_euler.z = radians(frame)
             except:
                 click.echo("No chromophore (CRO) found in structure")
 
             # Rotate all components
-            for obj in [obj_structure, obj_surface]:
-                mesh = bsyn.Mesh(obj, class_id=0)
-                mesh.rotate_by([0, 0, radians(frame)])
+            obj_structure.rotation_euler.z = radians(frame)
+            obj_surface.rotation_euler.z = radians(frame)
 
             # Save the frame
             rt.view_save(
