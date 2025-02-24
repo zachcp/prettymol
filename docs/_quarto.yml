@@ -23,6 +23,8 @@ website:
     right:
       - icon: github
         href: https://github.com/zachcp/prettymol
+      - icon: link
+        href: https://bsky.app/profile/prettymol.bsky.social
 
 format:
   html:
