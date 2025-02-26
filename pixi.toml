@@ -28,13 +28,12 @@ rdkit = "*"
 
 
 [pypi-dependencies]
-# geonodes = { git = "https://github.com/zachcp/geonodes", rev = "main" }
+geonodes = { git = "https://github.com/zachcp/geonodes", rev = "main" }
 biotite = ">=1.1"
 blender_notebook = "*"
 bpy = "*"
 databpy = "*"
-# molecularnodes = "*" https://github.com/BradyAJohnston/MolecularNodes.git
-molecularnodes = { git = "https://github.com/zachcp/MolecularNodes", rev = "20250224-biotite-load" }
+molecularnodes = "*"
 blendersynth = ">=0.3.0, <0.4"
 
 [package]
