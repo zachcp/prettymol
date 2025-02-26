@@ -11,7 +11,7 @@ class Material(StyleBase):
     See the Blender documentation for full details:
     https://docs.blender.org/manual/en/latest/render/shader_nodes/shader/principled.html
     """
-    base_color: Tuple[float, float, float, float] = field(default=(0.8, 0.8, 0.8, 1.0), metadata={"key": "Base Color"})
+    base_color: Tuple[float, float, float, float] = field(default=(0.8, 0.8, 0.8, 0.05), metadata={"key": "Base Color"})
     metallic: float = field(default=0.0, metadata={"key": "Metallic"})
     roughness: float = field(default=0.2, metadata={"key": "Roughness"})
     ior: float = field(default=1.45, metadata={"key": "IOR"})

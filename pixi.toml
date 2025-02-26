@@ -20,6 +20,7 @@ jupyter = ">=1.1.1,<2"
 opencv = "*"
 numpy = "<2"
 # pip = "*
+polars = "*"
 pillow = "*"
 pytest = "*"
 quarto = ">=1.6.40,<2"

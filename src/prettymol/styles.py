@@ -29,7 +29,7 @@ class BallStickStyle(StyleBase):
     as_mesh: bool = field(default=True, metadata={"key": "As Mesh"})
     sphere_radii: float = field(default=0.3, metadata={"key": "Sphere Radii"})
     bond_split: bool = field(default=False, metadata={"key": "Bond Split"})
-    bond_find: bool = field(default=False, metadata={"key": "Bond Find"})
+    bond_find: bool = field(default=True, metadata={"key": "Bond Find"})
     bond_radius: float = field(default=0.3, metadata={"key": "Bond Radius"})
     color_blur: bool = field(default=False, metadata={"key": "Color Blur"})
     shade_smooth: bool = field(default=True, metadata={"key": "Shade Smooth"})
@@ -71,7 +71,7 @@ class SpheresStyle(StyleBase):
 
 @dataclass(frozen=True)
 class SticksStyle(StyleBase):
-    style: str = field(default="stick", metadata={"key": "Style"})
+    style: str = field(default="sticks", metadata={"key": "Style"})
     quality: int = field(default=2, metadata={"key": "Quality"})
     radius: float = field(default=0.2, metadata={"key": "Radius"})
     color_blur: bool = field(default=False, metadata={"key": "Color Blur"})
@@ -94,7 +94,6 @@ class SurfaceStyle(StyleBase):
 
 
 StyleType = Union[BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle]
-
 
 class StyleCreator():
     def new() -> StyleType:
