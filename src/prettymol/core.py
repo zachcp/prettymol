@@ -2,17 +2,19 @@ import bpy
 import databpy
 import numpy as np
 from typing import Union, Any
+from biotite.structure import AtomArray, AtomArrayStack
 from biotite.structure.io import pdbx
 from biotite.structure import bonds
-from molecularnodes.entities.molecule.base import _create_object
+from molecularnodes.entities.molecule.base import _create_object, Molecule
 from molecularnodes.download import download
 from molecularnodes.blender import nodes as bl_nodes
 from molecularnodes.blender.nodes import add_custom, get_input, get_output,get_mod, new_tree, styles_mapping
 
+from .color import ColorArray
 from .materials import Material, MaterialCreator
 from .styles import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle
 
-
+from .molecule import Molecule2
 
 # Modified form the original:
 # https://github.com/BradyAJohnston/MolecularNodes/blob/main/molecularnodes/blender/nodes.py
@@ -52,7 +54,6 @@ def create_starting_node_tree_minimal(
     link(node_input.outputs[0], node_style.inputs[0])
     return None
 
-
 # Connect bonds and center the structure
 def load_pdb(code):
     cif_file = download(code)
@@ -60,18 +61,24 @@ def load_pdb(code):
     arr = next(iter(structures))
     arr.bonds = bonds.connect_via_residue_names(arr)
     arr.coord = arr.coord - np.mean(arr.coord, axis=0)
+    #arr = ColorArray(arr) # this will provide methods related to color
     return arr
 
 
 StyleType = Union[BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle]
 
+
 # ARR + Styles + Materials (+ Color Map....)
-def draw(arr: Any, style: StyleType, material: Material):
+def draw(arr: AtomArray, style: StyleType, material: Material):
+
+    arr = ColorArray(arr)
+    arr.color_by_element()
 
     # Create object and material
     molname = f"mol_{id(arr)}"
     matname = f"mol_{id(arr)}_mat"
-    obj, _ = _create_object(arr, name=molname)
+    mol = Molecule2.from_array(arr, name=molname)
+    obj = mol.create_object(style=style.style, color=None, name=f"{molname}")
 
     # Create and setup material
     mat = bpy.data.materials.new(matname)
@@ -82,14 +89,15 @@ def draw(arr: Any, style: StyleType, material: Material):
             if value := material.get_by_key(input.name):
                         input.default_value = value
 
-    # create the onject with the tyles and material
-    create_starting_node_tree_minimal(obj, style=style.style, material=mat)
+    mol.material = mat
 
     # Setup node tree
     modifier = next(mod for mod in obj.modifiers if mod.type == "NODES")
+    # print(modifier)
     node_tree = modifier.node_group
     nodes = node_tree.nodes
     style_node = next((node for node in nodes if "Style" in node.name), None)
+    print(style_node)
 
     # Apply style overrides
     if style_node:
@@ -97,4 +105,5 @@ def draw(arr: Any, style: StyleType, material: Material):
             if input.type != "GEOMETRY":
                 if value := style.get_by_key(input.name):
                     input.default_value = value
-    return obj
+
+    return mol.object

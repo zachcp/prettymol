@@ -20,6 +20,7 @@ jupyter = ">=1.1.1,<2"
 opencv = "*"
 numpy = "<2"
 # pip = "*
+polars = "*"
 pillow = "*"
 pytest = "*"
 quarto = ">=1.6.40,<2"
@@ -27,12 +28,13 @@ rdkit = "*"
 
 
 [pypi-dependencies]
-geonodes = { git = "https://github.com/zachcp/geonodes", rev = "main" }
+# geonodes = { git = "https://github.com/zachcp/geonodes", rev = "main" }
 biotite = ">=1.1"
 blender_notebook = "*"
 bpy = "*"
 databpy = "*"
-molecularnodes = "*"
+# molecularnodes = "*" https://github.com/BradyAJohnston/MolecularNodes.git
+molecularnodes = { git = "https://github.com/zachcp/MolecularNodes", rev = "20250224-biotite-load" }
 blendersynth = ">=0.3.0, <0.4"
 
 [package]
