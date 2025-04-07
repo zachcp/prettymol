@@ -5,7 +5,7 @@ from typing import Union, Any
 from biotite.structure import AtomArray, AtomArrayStack
 from biotite.structure.io import pdbx
 from biotite.structure import bonds
-from molecularnodes.entities.molecule.base import _create_object, Molecule
+from molecularnodes.entities.molecule.base import Molecule
 from molecularnodes.download import download
 from molecularnodes.blender import nodes as bl_nodes
 from molecularnodes.blender.nodes import add_custom, get_input, get_output,get_mod, new_tree, styles_mapping
@@ -14,7 +14,23 @@ from .color import ColorArray
 from .materials import Material, MaterialCreator
 from .styles import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle
 
-from .molecule import Molecule2
+
+class Prettymol():
+    def __init__(self):
+        self.array = None
+
+    @classmethod
+    def load_mol(cls, code):
+        mol = Molecule.fetch(code)
+        array = mol.array
+        print(dir(mol))
+        # print(mol._object_name)
+        bpy.data.objects.remove(mol.object)
+        cls.array = array
+        return cls
+
+
+
 
 # Modified form the original:
 # https://github.com/BradyAJohnston/MolecularNodes/blob/main/molecularnodes/blender/nodes.py

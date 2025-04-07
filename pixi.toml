@@ -33,7 +33,8 @@ biotite = ">=1.1"
 blender_notebook = "*"
 bpy = "*"
 databpy = "*"
-molecularnodes = "*"
+# molecularnodes = "*"
+molecularnodes = { git = "https://github.com/BradyAJohnston/MolecularNodes.git" }
 blendersynth = ">=0.3.0, <0.4"
 
 [package]
