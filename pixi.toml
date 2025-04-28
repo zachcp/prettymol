@@ -15,11 +15,9 @@ prettymol = { path = "." }
 ffmpeg-python = "*"
 ffmpeg = "*"
 imageio = "*"
-# ipython = "*"
 jupyter = ">=1.1.1,<2"
 opencv = "*"
 numpy = "<2"
-# pip = "*
 polars = "*"
 pillow = "*"
 pytest = "*"
@@ -29,16 +27,15 @@ rdkit = "*"
 
 [pypi-dependencies]
 geonodes = { git = "https://github.com/zachcp/geonodes", rev = "main" }
-biotite = ">=1.1"
 blender_notebook = "*"
-bpy = "*"
 databpy = "*"
-molecularnodes = "*"
 blendersynth = ">=0.3.0, <0.4"
+molecularnodes = ">=4.4.1"
+bpy = ">=4.4"
 
 [package]
 name = "prettymol"
-version = "0.3.1"
+version = "0.4.0"
 
 
 [package.build]
@@ -58,6 +55,6 @@ docs-preview = "quarto preview docs"
 docs-build = "quarto render docs"
 install-repl = "blender_notebook install --blender-exec=\"/Applications/Blender.app/Contents/MacOS/Blender\""
 jupyter = "jupyter lab"
-remove = "rm -rf /Applications/Blender.app/Contents/Resources/4.3/python"
+remove = "rm -rf /Applications/Blender.app/Contents/Resources/4.4/python"
 test-prettymol-render = "prettymol render --code 1FAP --output prettymol.png"
 test-prettymol-grow = "prettymol grow --code 1FAP --output prettymol_grow"

@@ -1,5 +1,4 @@
 from biotite.structure import AtomArray
-# from molecularnodes.color import color_from_atomic_number, color_from_element, colors_from_elements, color_chains, color_chains_equidistant
 from molecularnodes.color import (
     color_from_atomic_number,
     color_from_element,
@@ -8,7 +7,6 @@ from molecularnodes.color import (
     color_chains,
     iupac_colors_rgb
 )
-
 import numpy as np
 
 

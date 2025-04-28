@@ -7,13 +7,13 @@ import click
 from PIL import Image
 from pathlib import Path
 
-from .core import load_pdb, draw
+from .core import draw, Mol2
 from .lighting import LightingCreator
 from .materials import MaterialCreator
 from .repltools import Repltools
 from .selections import StructureSelector
 from .styles import StyleCreator
-
+import molecularnodes as mn
 
 
 @click.group()
@@ -28,11 +28,20 @@ def cli():
 def render(code, output):
     """Generate molecular structure image from code"""
 
+    try:
+        mn.register()
+        #mn.template.install()
+        #mn.assets.install()
+        #mn.nodes.material.add_all_materials()
+    except:
+        pass
+
+
     rt = Repltools()
     rt.view_set_axis(distance=2)
 
     # load structure
-    structure = load_pdb(code)
+    structure =  Mol2.load_code(code)
 
     # setup the scene
     polymer = StructureSelector(structure).amino_acids().get_selection()
