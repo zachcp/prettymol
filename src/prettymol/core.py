@@ -9,7 +9,85 @@ from .color import ColorArray
 from .materials import Material, MaterialCreator
 from .styles import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle
 
+from .selection_functions import *
+
 StyleType = Union[BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle]
+
+
+class Prettymol():
+    def init__(self, array: AtomArray):
+        self.array = array
+        self.transforamttons = None
+        self.selections = []
+
+  def add_selection(self, selection=None, color=None, style=None, material=None):
+        """
+        Add selection(s) to the molecule.
+
+        Parameters:
+        - selection: A single selection function or a list of selection functions to be combined.
+                     Each function should be a curried function that takes a structure and returns a mask.
+        - color: Color to apply to the selection
+        - style: Style to apply
+        - material: Material to apply
+
+        Returns:
+        - self (for method chaining)
+        """
+
+        # process  selecitons fist
+        if selection is None:
+            # No selection means select all atoms
+            mask = np.ones(len(self.array), dtype=bool)
+        elif isinstance(selection, list):
+            # Process a list of selection functions
+            if not selection:  # Empty list
+                mask = np.ones(len(self.array), dtype=bool)
+            else:
+                # Start with all atoms selected
+                mask = np.ones(len(self.array), dtype=bool)
+                # Apply each selection function and combine with AND
+                for sel_func in selection:
+                    if callable(sel_func):
+                        result = sel_func(self.array)
+                        mask = mask & result
+                    else:
+                        raise TypeError(f"Selection must be callable, got {type(sel_func)}")
+        elif callable(selection):
+            # Single selection function
+            mask = selection(self.array)
+        else:
+            raise TypeError("Selection must be a callable, a list of callables, or None")
+
+        # then add color fns
+
+
+        # then add style
+
+
+
+        # then add materials
+
+
+        self.selections.append({
+            'mask': mask,
+            'color': color,
+            'style': style,
+            'material': material
+        })
+
+        return self
+
+    def draw(self):
+        # apply transformations
+
+        # iterate through each set of selections
+        #    - create a new AtomArray if there is a selection
+        #    - apply the color_fn if there is one
+        #    - create the MN Molecule and Blender Object
+        #    - apply the style and the material
+
+        pass
 
 
 class Mol2():
