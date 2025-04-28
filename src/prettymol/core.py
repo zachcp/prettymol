@@ -1,26 +1,35 @@
 import copy
 import bpy
-import databpy
 import numpy as np
 from typing import Union, Any
-from biotite.structure import AtomArray, AtomArrayStack
+from biotite.structure import AtomArray
 import molecularnodes as mn
 from .color import ColorArray
 from .materials import Material, MaterialCreator
 from .styles import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle
-
+import numpy as np
 from .selection_functions import *
 
 StyleType = Union[BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle]
 
 
 class Prettymol():
-    def init__(self, array: AtomArray):
+    def __init__(self, array: AtomArray):
         self.array = array
         self.transforamttons = None
         self.selections = []
 
-  def add_selection(self, selection=None, color=None, style=None, material=None):
+    @classmethod
+    def load_code(cls, code):
+        mol = mn.Molecule.fetch(code)
+        arr = copy.copy(mol.array)[0]
+        # deletes the object with the code name after copying the aray
+        bpy.data.objects.remove(mol.object)
+        arr.coord = arr.coord - np.mean(arr.coord, axis=0)
+        return Prettymol(arr)
+
+
+    def add_selection(self, selection=None, color=None, style=None, material=None):
         """
         Add selection(s) to the molecule.
 
@@ -79,6 +88,7 @@ class Prettymol():
         return self
 
     def draw(self):
+
         # apply transformations
 
         # iterate through each set of selections
@@ -86,8 +96,26 @@ class Prettymol():
         #    - apply the color_fn if there is one
         #    - create the MN Molecule and Blender Object
         #    - apply the style and the material
+        for idx, selection in enumerate(self.selections):
+            print(f"idx, {idx}, selection: {selection}")
 
-        pass
+            mask = selection['mask']
+            color = selection['color']
+            style = selection['style']
+            material = selection['material']
+
+            new_arr = copy.copy(self.array[mask])
+            mol = mn.Molecule(array=new_arr, reader=None)
+            mol.create_object()
+            mol.add_style("cartoon")
+            #.add_style(style=style_name, material=material_name)
+
+
+
+
+
+
+
 
 
 class Mol2():
