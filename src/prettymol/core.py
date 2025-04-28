@@ -9,10 +9,32 @@ from .color import ColorArray
 from .materials import Material, MaterialCreator
 from .styles import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle
 
+StyleType = Union[BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle]
 
-class Mol2(mn.Molecule):
-    def __init__(self, array, reader=None):
-        super().__init__(array, reader=None)
+
+class Mol2():
+    def __init__(self,
+        array,
+        style:  StyleType | str = None,
+        material:  Material | str = None):
+
+        # handle styles
+        if style is None:
+           self.style = "cartoon"
+        elif isinstance(style, str):
+            self.style = style
+        else:
+            self.style = style.style
+
+        # handle materials
+        #         # handle styles
+        if material is None:
+           self.material = "cartoon"
+        elif isinstance(material, str):
+            self.material = material
+        else:
+            self.material = material.materialize()
+
 
     @classmethod
     def load_code(cls, code):
@@ -25,11 +47,16 @@ class Mol2(mn.Molecule):
     def apply_style(self):
         print(self.tree)
 
+    def draw(self):
+        mol = mn.Molecule(array=self.array, reader=None)
+        mol.create_object()
+        print(mol)
+        print(mol.object.uuid)
+        #.add_style(style=style_name, material=material_name)
+        return mol.object
 
 
 
-
-StyleType = Union[BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle]
 
 
 # ARR + Styles + Materials (+ Color Map....)
@@ -37,6 +64,7 @@ def draw(arr: AtomArray, style: StyleType | str, material: Material | str ):
     # arr = ColorArray(arr)
     # arr.color_by_element()
     # Create object and material
+
 
     if isinstance(style, str):
         style_name = style
@@ -47,5 +75,10 @@ def draw(arr: AtomArray, style: StyleType | str, material: Material | str ):
         material_name = material
     else:
         material_name = material.materialize()
-    mol = mn.Molecule(array=arr, reader=None).add_style(style=style_name, material=material_name)
+
+    mol = mn.Molecule(array=arr, reader=None)
+    mol.create_object()
+    print(mol)
+    print(mol.object.uuid)
+    #.add_style(style=style_name, material=material_name)
     return mol.object

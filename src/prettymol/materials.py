@@ -47,14 +47,18 @@ class Material(StyleBase):
     def materialize(self, name=None) -> bpy.types.Material:
         if name is None:
             name = f"material_{id(self)}"
-        mat = bpy.data.materials.new(name)
-        mat.use_nodes = True
-        bsdf = mat.node_tree.nodes.get("Principled BSDF")
-        for input in bsdf.inputs:
-            if input.type != "GEOMETRY":
-                if value := self.get_by_key(input.name):
-                    input.default_value = value
-        return mat
+
+        if name in bpy.data.materials:
+            return bpy.data.materials[name]
+        else:
+            mat = bpy.data.materials.new(name)
+            mat.use_nodes = True
+            bsdf = mat.node_tree.nodes.get("Principled BSDF")
+            for input in bsdf.inputs:
+                if input.type != "GEOMETRY":
+                    if value := self.get_by_key(input.name):
+                        input.default_value = value
+            return mat
 
 
 
