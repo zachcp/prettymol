@@ -44,18 +44,14 @@ class Prettymol():
         - self (for method chaining)
         """
 
-        # process  selecitons fist
+        # process  selections first
         if selection is None:
-            # No selection means select all atoms
             mask = np.ones(len(self.array), dtype=bool)
         elif isinstance(selection, list):
-            # Process a list of selection functions
             if not selection:  # Empty list
                 mask = np.ones(len(self.array), dtype=bool)
             else:
-                # Start with all atoms selected
                 mask = np.ones(len(self.array), dtype=bool)
-                # Apply each selection function and combine with AND
                 for sel_func in selection:
                     if callable(sel_func):
                         result = sel_func(self.array)
@@ -63,7 +59,6 @@ class Prettymol():
                     else:
                         raise TypeError(f"Selection must be callable, got {type(sel_func)}")
         elif callable(selection):
-            # Single selection function
             mask = selection(self.array)
         else:
             raise TypeError("Selection must be a callable, a list of callables, or None")
@@ -87,6 +82,10 @@ class Prettymol():
 
         return self
 
+
+    def _process_selections(self):
+        pass
+
     def draw(self):
 
         # apply transformations
@@ -105,9 +104,14 @@ class Prettymol():
             material = selection['material']
 
             new_arr = copy.copy(self.array[mask])
+
+            new_arr.set_annotation("Color", np.array([ [0.2, 0.2, 0.2] for _ in range(len(new_arr))]))
+
             mol = mn.Molecule(array=new_arr, reader=None)
             mol.create_object()
             mol.add_style("cartoon")
+
+
             #.add_style(style=style_name, material=material_name)
 
 
