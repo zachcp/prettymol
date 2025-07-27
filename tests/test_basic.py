@@ -3,7 +3,7 @@ import pytest
 def test_imports():
     try:
         import prettymol
-        from prettymol import draw, load_pdb
+        from prettymol import draw, Mol2
         from prettymol import Repltools
         from prettymol import StructureSelector
         from prettymol import MaterialCreator

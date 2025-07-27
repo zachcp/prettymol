@@ -1,109 +1,194 @@
+import copy
 import bpy
-import databpy
 import numpy as np
 from typing import Union, Any
-from biotite.structure import AtomArray, AtomArrayStack
-from biotite.structure.io import pdbx
-from biotite.structure import bonds
-from molecularnodes.entities.molecule.base import _create_object, Molecule
-from molecularnodes.download import download
-from molecularnodes.blender import nodes as bl_nodes
-from molecularnodes.blender.nodes import add_custom, get_input, get_output,get_mod, new_tree, styles_mapping
-
+from biotite.structure import AtomArray
+import molecularnodes as mn
 from .color import ColorArray
 from .materials import Material, MaterialCreator
 from .styles import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle
-
-from .molecule import Molecule2
-
-# Modified form the original:
-# https://github.com/BradyAJohnston/MolecularNodes/blob/main/molecularnodes/blender/nodes.py
-# removes the color nodes to make a dead-simple node.
-def create_starting_node_tree_minimal(
-    object: bpy.types.Object,
-    coll_frames: bpy.types.Collection | None = None,
-    style: str = "spheres",
-    name: str | None = None,
-    color: str = "common",
-    material: str = "MN Default",
-    is_modifier: bool = True,
-) -> None:
-    mod = get_mod(object)
-    if not name:
-        name = f"MN_{object.name}"
-
-    try:
-        tree = bpy.data.node_groups[name]
-        mod.node_group = tree
-        return
-    except KeyError:
-        pass
-
-    tree = new_tree(name, input_name="Atoms")
-    tree.is_modifier = is_modifier
-    link = tree.links.new
-    mod.node_group = tree
-
-    # move the input and output nodes for the group
-    node_input = get_input(tree)
-    node_output = get_output(tree)
-    node_input.location = [0, 0]
-    node_output.location = [700, 0]
-    node_style = add_custom(tree, styles_mapping[style], [450, 0], material=material)
-    link(node_style.outputs[0], node_output.inputs[0])
-    link(node_input.outputs[0], node_style.inputs[0])
-    return None
-
-# Connect bonds and center the structure
-def load_pdb(code):
-    cif_file = download(code)
-    structures = pdbx.get_structure(pdbx.CIFFile.read(cif_file))
-    arr = next(iter(structures))
-    arr.bonds = bonds.connect_via_residue_names(arr)
-    arr.coord = arr.coord - np.mean(arr.coord, axis=0)
-    #arr = ColorArray(arr) # this will provide methods related to color
-    return arr
+import numpy as np
+from .selection_functions import *
+from molecularnodes.nodes.nodes import create_starting_node_tree
 
 
 StyleType = Union[BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle]
 
 
+class Prettymol():
+    def __init__(self, array: AtomArray):
+        self.array = array
+        self.transforamttons = None
+        self.selections = []
+
+    @classmethod
+    def load_code(cls, code):
+        mol = mn.Molecule.fetch(code)
+        arr = copy.copy(mol.array)[0]
+        # deletes the object with the code name after copying the aray
+        bpy.data.objects.remove(mol.object)
+        arr.coord = arr.coord - np.mean(arr.coord, axis=0)
+        return Prettymol(arr)
+
+
+
+    def add_selection(self, selection=None, color=None, style=None, material=None):
+        """
+        Add selection(s) to the molecule.
+
+        Parameters:
+        - selection: A single selection function or a list of selection functions to be combined.
+                     Each function should be a curried function that takes a structure and returns a mask.
+        - color: Color to apply to the selection
+        - style: Style to apply
+        - material: Material to apply
+
+        Returns:
+        - self (for method chaining)
+        """
+
+        # process  selections first
+        if selection is None:
+            mask = np.ones(len(self.array), dtype=bool)
+        elif isinstance(selection, list):
+            if not selection:  # Empty list
+                mask = np.ones(len(self.array), dtype=bool)
+            else:
+                mask = np.ones(len(self.array), dtype=bool)
+                for sel_func in selection:
+                    if callable(sel_func):
+                        result = sel_func(self.array)
+                        mask = mask & result
+                    else:
+                        raise TypeError(f"Selection must be callable, got {type(sel_func)}")
+        elif callable(selection):
+            mask = selection(self.array)
+        else:
+            raise TypeError("Selection must be a callable, a list of callables, or None")
+
+        # then add color fns
+
+
+        # then add style
+
+
+
+        # then add materials
+
+
+        self.selections.append({
+            'mask': mask,
+            'color': color,
+            'style': style,
+            'material': material
+        })
+
+        return self
+
+
+    def _process_selections(self):
+        pass
+
+
+    # Note: In mn.nodes.geometry:
+    #   assign_material
+    #   add_style_branch
+    def draw(self):
+        # apply transformations
+
+        # iterate through each set of selections
+        #    - create a new AtomArray if there is a selection
+        #    - apply the color_fn if there is one
+        #    - create the MN Molecule and Blender Object
+        #    - apply the style and the material
+        for idx, selection in enumerate(self.selections):
+            print(f"idx, {idx}, selection: {selection}")
+            mask = selection['mask']
+            color = selection['color']
+            style = selection['style']
+            material = selection['material']
+            new_arr = copy.deepcopy(self.array[mask])
+            print(style, material)
+            # need to apply the color fns here.
+            new_arr.set_annotation("Color", np.array([ [1., 0.2, 0.2] for _ in range(len(new_arr))]))
+            mol = mn.Molecule(array=new_arr, reader=None)
+            mol.create_object()
+            mol.add_style(style, color=None, material = material)
+
+        return self
+
+
+
+
+
+
+class Mol2():
+    def __init__(self,
+        array,
+        style:  StyleType | str = None,
+        material:  Material | str = None):
+
+        # handle styles
+        if style is None:
+           self.style = "cartoon"
+        elif isinstance(style, str):
+            self.style = style
+        else:
+            self.style = style.style
+
+        # handle materials
+        #         # handle styles
+        if material is None:
+           self.material = "cartoon"
+        elif isinstance(material, str):
+            self.material = material
+        else:
+            self.material = material.materialize()
+
+
+    @classmethod
+    def load_code(cls, code):
+        mol = mn.Molecule.fetch(code)
+        arr = copy.copy(mol.array)
+        # deletes the object with the code name after copying the aray
+        bpy.data.objects.remove(mol.object)
+        return arr[0]
+
+    def apply_style(self):
+        print(self.tree)
+
+    def draw(self):
+        mol = mn.Molecule(array=self.array, reader=None)
+        mol.create_object()
+        print(mol)
+        print(mol.object.uuid)
+        #.add_style(style=style_name, material=material_name)
+        return mol.object
+
+
+
+
+
 # ARR + Styles + Materials (+ Color Map....)
-def draw(arr: AtomArray, style: StyleType, material: Material):
-
-    arr = ColorArray(arr)
-    arr.color_by_element()
-
+def draw(arr: AtomArray, style: StyleType | str, material: Material | str ):
+    # arr = ColorArray(arr)
+    # arr.color_by_element()
     # Create object and material
-    molname = f"mol_{id(arr)}"
-    matname = f"mol_{id(arr)}_mat"
-    mol = Molecule2.from_array(arr, name=molname)
-    obj = mol.create_object(style=style.style, color=None, name=f"{molname}")
 
-    # Create and setup material
-    mat = bpy.data.materials.new(matname)
-    mat.use_nodes = True
-    bsdf = mat.node_tree.nodes.get("Principled BSDF")
-    for input in bsdf.inputs:
-        if input.type != "GEOMETRY":
-            if value := material.get_by_key(input.name):
-                        input.default_value = value
 
-    mol.material = mat
+    if isinstance(style, str):
+        style_name = style
+    else:
+        style_name = style.style
 
-    # Setup node tree
-    modifier = next(mod for mod in obj.modifiers if mod.type == "NODES")
-    # print(modifier)
-    node_tree = modifier.node_group
-    nodes = node_tree.nodes
-    style_node = next((node for node in nodes if "Style" in node.name), None)
-    print(style_node)
+    if isinstance(material, str):
+        material_name = material
+    else:
+        material_name = material.blenderize()
 
-    # Apply style overrides
-    if style_node:
-        for input in style_node.inputs:
-            if input.type != "GEOMETRY":
-                if value := style.get_by_key(input.name):
-                    input.default_value = value
-
+    mol = mn.Molecule(array=arr, reader=None)
+    mol.create_object()
+    print(mol)
+    print(mol.object.uuid)
+    #.add_style(style=style_name, material=material_name)
     return mol.object

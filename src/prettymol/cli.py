@@ -7,13 +7,13 @@ import click
 from PIL import Image
 from pathlib import Path
 
-from .core import load_pdb, draw
+from .core import draw, Mol2
 from .lighting import LightingCreator
 from .materials import MaterialCreator
 from .repltools import Repltools
 from .selections import StructureSelector
 from .styles import StyleCreator
-
+import molecularnodes as mn
 
 
 @click.group()
@@ -28,20 +28,27 @@ def cli():
 def render(code, output):
     """Generate molecular structure image from code"""
 
+    mn.register()
+
+
     rt = Repltools()
     rt.view_set_axis(distance=2)
 
     # load structure
-    structure = load_pdb(code)
+    structure =  Mol2.load_code(code)
+    print(structure)
 
     # setup the scene
     polymer = StructureSelector(structure).amino_acids().get_selection()
     ligand = StructureSelector(structure).ligand().get_selection()
+    print(polymer)
+    print(ligand)
 
     # draw the molecule
     draw(polymer, StyleCreator.cartoon(), MaterialCreator.new())
     draw(ligand, StyleCreator.spheres(),  MaterialCreator.new())
 
+    print("Pre-render")
     # render the scene
     bpy.context.scene.render.filepath = output
     bpy.ops.render.render(use_viewport=True, write_still=True)
@@ -70,7 +77,7 @@ def grow(code, output, width, height, camera_distance, rotation_steps, selection
     rt.view_set_axis(distance=camera_distance)
 
     # Load and orient structure
-    structure = load_pdb(code)
+    structure = Mol2.load_code(code)
     polymer = StructureSelector(structure).amino_acids().get_selection()
     resids = list(set(polymer.get_annotation('res_id').tolist()))
 

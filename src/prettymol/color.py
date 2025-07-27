@@ -1,5 +1,4 @@
 from biotite.structure import AtomArray
-# from molecularnodes.color import color_from_atomic_number, color_from_element, colors_from_elements, color_chains, color_chains_equidistant
 from molecularnodes.color import (
     color_from_atomic_number,
     color_from_element,
@@ -8,7 +7,6 @@ from molecularnodes.color import (
     color_chains,
     iupac_colors_rgb
 )
-
 import numpy as np
 
 
@@ -28,6 +26,7 @@ class ColorArray(AtomArray):
         for annot in atom_array.get_annotation_categories():
             self.set_annotation(annot, atom_array.get_annotation(annot))
         self.coord = atom_array.coord.copy()
+        self.bonds = atom_array.bonds
 
         # Add color annotation
         self.add_annotation("color", dtype=object)

@@ -1,3 +1,4 @@
+import bpy
 from dataclasses import dataclass, replace, field, fields
 from typing import List, Tuple
 from .styles import StyleBase
@@ -42,6 +43,22 @@ class Material(StyleBase):
     emission_strength: float = field(default=0.0, metadata={"key": "Emission Strength"})
     thin_film_thickness: float = field(default=0.0, metadata={"key": "Thin Film Thickness"})
     thin_film_ior: float = field(default=1.3, metadata={"key": "Thin Film IOR"})
+
+    def blenderize(self, name=None) -> bpy.types.Material:
+        if name is None:
+            name = f"material_{id(self)}"
+
+        if name in bpy.data.materials:
+            return bpy.data.materials[name]
+        else:
+            mat = bpy.data.materials.new(name)
+            mat.use_nodes = True
+            bsdf = mat.node_tree.nodes.get("Principled BSDF")
+            for input in bsdf.inputs:
+                if input.type != "GEOMETRY":
+                    if value := self.get_by_key(input.name):
+                        input.default_value = value
+            return mat
 
 
 
