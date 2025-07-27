@@ -8,6 +8,9 @@ wheels/
 
 # Virtual environments
 .venv
-
 .pixi
 .ipynb_checkpoints
+
+.pytest_cache
+.idea
+.ropeproject

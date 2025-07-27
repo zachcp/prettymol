@@ -6,12 +6,12 @@ readme = "README.md"
 requires-python = "==3.11.*"
 dependencies = [
     "biotite>=1.1",
-    "bpy",
-    "molecularnodes>=4.4.1",
+    "molecularnodes>=4.4.3",
     "click",
     "pillow",
+    "bpy>=4.4",
 ]
-packages = [{ include = "prettymol", from = "src" }]
+
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Python :: 3",
@@ -36,6 +36,9 @@ build-backend = "hatchling.build"
 [tool.hatch.build]
 exclude = ["/docs", "/docs/*"]
 
+[tool.hatch.build.targets.wheel]
+sources = ["src"]
+
 [tool.pixi.project]
 channels = [
     "conda-forge",
@@ -48,7 +51,6 @@ preview = ["pixi-build"]
 [tool.pixi.dependencies]
 python = "==3.11"
 python_abi = "3.11.*"
-prettymol = { path = "." }
 ffmpeg-python = "*"
 ffmpeg = "*"
 imageio = "*"
@@ -66,8 +68,7 @@ geonodes = { git = "https://github.com/zachcp/geonodes", rev = "main" }
 blender_notebook = "*"
 databpy = "*"
 blendersynth = ">=0.3.0, <0.4"
-molecularnodes = ">=4.4.3"
-bpy = ">=4.4"
+
 
 [tool.pixi.tasks]
 clear-kernels = "rm -rf ~/Library/Jupyter/kernels/*"
