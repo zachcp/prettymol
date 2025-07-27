@@ -22,6 +22,7 @@ class StyleBase:
     def update_properties(self, **changes):
         return replace(self, **changes)
 
+
 @dataclass(frozen=True)
 class BallStickStyle(StyleBase):
     style: str = field(default="ball+stick", metadata={"key": "Style"})

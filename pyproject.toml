@@ -23,7 +23,6 @@ classifiers = [
 Homepage = "https://github.com/zachcp/prettymol"
 Issues = "https://github.com/zachcp/prettymol/issues"
 
-
 [project.scripts]
 prettymol = "prettymol.cli:cli"
 
@@ -36,3 +35,46 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build]
 exclude = ["/docs", "/docs/*"]
+
+[tool.pixi.project]
+channels = [
+    "conda-forge",
+    "https://prefix.dev/pixi-build-backends",
+    "https://prefix.dev/conda-forge",
+]
+platforms = ["osx-arm64", "linux-64"]
+preview = ["pixi-build"]
+
+[tool.pixi.dependencies]
+python = "==3.11"
+python_abi = "3.11.*"
+prettymol = { path = "." }
+ffmpeg-python = "*"
+ffmpeg = "*"
+imageio = "*"
+jupyter = ">=1.1.1,<2"
+opencv = "*"
+numpy = "<2"
+polars = "*"
+pillow = "*"
+pytest = "*"
+quarto = ">=1.6.40,<2"
+rdkit = "*"
+
+[tool.pixi.pypi-dependencies]
+geonodes = { git = "https://github.com/zachcp/geonodes", rev = "main" }
+blender_notebook = "*"
+databpy = "*"
+blendersynth = ">=0.3.0, <0.4"
+molecularnodes = ">=4.4.3"
+bpy = ">=4.4"
+
+[tool.pixi.tasks]
+clear-kernels = "rm -rf ~/Library/Jupyter/kernels/*"
+docs-preview = "quarto preview docs"
+docs-build = "quarto render docs"
+install-repl = "blender_notebook install --blender-exec=\"/Applications/Blender.app/Contents/MacOS/Blender\""
+jupyter = "jupyter lab"
+remove = "rm -rf /Applications/Blender.app/Contents/Resources/4.4/python"
+test-prettymol-render = "prettymol render --code 1FAP --output prettymol.png"
+test-prettymol-grow = "prettymol grow --code 1FAP --output prettymol_grow"

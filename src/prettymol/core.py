@@ -9,6 +9,8 @@ from .materials import Material, MaterialCreator
 from .styles import BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle
 import numpy as np
 from .selection_functions import *
+from molecularnodes.nodes.nodes import create_starting_node_tree
+
 
 StyleType = Union[BallStickStyle, CartoonStyle, RibbonStyle, SpheresStyle, SticksStyle, SurfaceStyle]
 
@@ -27,6 +29,7 @@ class Prettymol():
         bpy.data.objects.remove(mol.object)
         arr.coord = arr.coord - np.mean(arr.coord, axis=0)
         return Prettymol(arr)
+
 
 
     def add_selection(self, selection=None, color=None, style=None, material=None):
@@ -86,8 +89,11 @@ class Prettymol():
     def _process_selections(self):
         pass
 
-    def draw(self):
 
+    # Note: In mn.nodes.geometry:
+    #   assign_material
+    #   add_style_branch
+    def draw(self):
         # apply transformations
 
         # iterate through each set of selections
@@ -97,25 +103,19 @@ class Prettymol():
         #    - apply the style and the material
         for idx, selection in enumerate(self.selections):
             print(f"idx, {idx}, selection: {selection}")
-
             mask = selection['mask']
             color = selection['color']
             style = selection['style']
             material = selection['material']
-
-            new_arr = copy.copy(self.array[mask])
-
-            new_arr.set_annotation("Color", np.array([ [0.2, 0.2, 0.2] for _ in range(len(new_arr))]))
-
+            new_arr = copy.deepcopy(self.array[mask])
+            print(style, material)
+            # need to apply the color fns here.
+            new_arr.set_annotation("Color", np.array([ [1., 0.2, 0.2] for _ in range(len(new_arr))]))
             mol = mn.Molecule(array=new_arr, reader=None)
             mol.create_object()
-            mol.add_style("cartoon")
+            mol.add_style(style, color=None, material = material)
 
-
-            #.add_style(style=style_name, material=material_name)
-
-
-
+        return self
 
 
 
@@ -184,7 +184,7 @@ def draw(arr: AtomArray, style: StyleType | str, material: Material | str ):
     if isinstance(material, str):
         material_name = material
     else:
-        material_name = material.materialize()
+        material_name = material.blenderize()
 
     mol = mn.Molecule(array=arr, reader=None)
     mol.create_object()

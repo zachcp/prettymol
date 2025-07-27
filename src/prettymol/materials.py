@@ -44,7 +44,7 @@ class Material(StyleBase):
     thin_film_thickness: float = field(default=0.0, metadata={"key": "Thin Film Thickness"})
     thin_film_ior: float = field(default=1.3, metadata={"key": "Thin Film IOR"})
 
-    def materialize(self, name=None) -> bpy.types.Material:
+    def blenderize(self, name=None) -> bpy.types.Material:
         if name is None:
             name = f"material_{id(self)}"
 
